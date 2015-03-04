@@ -38,7 +38,7 @@
         <assertj-core.version>1.6.0</assertj-core.version>
         <selenium-firefox-driver.version>2.44.0</selenium-firefox-driver.version>
         <httpclient.version>4.3.6</httpclient.version>
-        <rest-assured.version>2.3.1</rest-assured.version>
+        <rest-assured.version>2.4.0</rest-assured.version>
         <myTestSourceDirectory>${project.basedir}/src/test</myTestSourceDirectory>
     </properties>
 
