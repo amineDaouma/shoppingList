@@ -13,6 +13,10 @@ shoppingList.config(['$routeProvider',
                 templateUrl: 'views/me.html',
                 controller: 'MyAccountCtrl'
             }).
+            when('/lists/:listId', {
+                templateUrl: 'views/list.html',
+                controller: 'listCtrl'
+            }).
             otherwise({
                 redirectTo: 'index.html'
             });
