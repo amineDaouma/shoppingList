@@ -2,6 +2,7 @@ package fr.xebia.shoppinglist.users;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,6 +23,24 @@ public class UsersResource {
     @Inject
     public UsersResource(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Path("{userId}/lists/{listId}/products")
+    @POST
+    public Response addProductToList(@PathParam("userId") Long userId,
+                                     @PathParam("listId") Long listId,
+                                     String product) {
+        User user = userRepository.get(userId);
+        for (ShoppingList list : user.lists) {
+            if (listId.equals(list.id)) {
+                list.addProduct(product);
+            }
+        }
+        return Response.
+                ok().
+                entity(product).
+                build()
+                ;
     }
 
     @POST
@@ -62,5 +81,25 @@ public class UsersResource {
                 ok().
                 entity(userRepository.get(userId).lists).
                 build();
+    }
+
+    @Path("{userId}/lists/{listId}")
+    @GET
+    public Response retrieveList(@PathParam("userId") Long userId,
+                                 @PathParam("listId") Long listId) {
+        User user = userRepository.get(userId);
+        for (ShoppingList list : user.lists) {
+            if (listId.equals(list.id)) {
+                return Response.
+                        ok().
+                        entity(list).
+                        build()
+                        ;
+            }
+        }
+        return Response.
+                status(NOT_FOUND).
+                build()
+                ;
     }
 }
