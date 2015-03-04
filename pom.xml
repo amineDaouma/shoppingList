@@ -347,6 +347,7 @@
                         <include>app.js</include>
                         <include>accountCreation.js</include>
                         <include>myAccount.js</include>
+                        <include>listCtrl.js</include>
                     </sourceIncludes>
                 </configuration>
             </plugin>
