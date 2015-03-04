@@ -17,7 +17,9 @@
 
     <div class="row">
         <ul>
-            <li class="shopping-list" ng-repeat="list in myShoppingLists" value="{{list.id}}">{{list.title}}</li>
+            <li class="shopping-list" ng-repeat="list in myShoppingLists" value="{{list.id}}">
+                <a href="#/lists/{{list.id}}">{{list.title}}</a>
+            </li>
         </ul>
     </div>
 

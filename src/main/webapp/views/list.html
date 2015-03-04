@@ -1,0 +1,20 @@
+<div>
+    <div class="row">
+        <h3>{{list.title}} ({{list.products.length}})</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input type="text" class="form-control" id="newProduct" ng-model="newProduct" placeholder="Add product" required>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" id="btnAddProduct" ng-click="addProductToList()">Add product</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <ul id="products">
+            <li class="product" ng-repeat="product in list.products" value="{{product}}">{{product}}</li>
+        </ul>
+    </div>
+</div>
