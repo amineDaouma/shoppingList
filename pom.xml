@@ -345,8 +345,8 @@
 
                     <sourceIncludes>
                         <include>app.js</include>
-                        <include>accountCreation.js</include>
-                        <include>myAccount.js</include>
+                        <include>accountCreationCtrl.js</include>
+                        <include>myAccountCtrl.js</include>
                         <include>listCtrl.js</include>
                     </sourceIncludes>
                 </configuration>
