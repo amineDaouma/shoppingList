@@ -7,4 +7,13 @@ shoppingList.controller('listCtrl', [ '$scope', '$http', '$routeParams', functio
             $scope.list = data;
         })
     ;
+
+    $scope.addProductToList = function () {
+        $http.post('/api/users/1/lists/' + $routeParams.listId + '/products', $scope.newProduct)
+            .success(function (data) {
+                $scope.newProduct = "";
+                $scope.list.products.push(data);
+            }
+        );
+    };
 }]);
