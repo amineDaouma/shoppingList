@@ -17,6 +17,7 @@ import cucumber.api.java.en.When;
 public class ShoppingListStepdefs {
 
     private WebDriver webDriver;
+    private String listTitle;
 
     @Inject
     public ShoppingListStepdefs(WebDriver webDriver) {
@@ -39,12 +40,13 @@ public class ShoppingListStepdefs {
 
     @When("^she creates a new list with title '(.*)'$")
     public void she_creates_a_new_list_with_title(String listTitle) throws Throwable {
-        webDriver.findElement(id("newListTitle")).sendKeys(listTitle);
+        this.listTitle = listTitle;
+        webDriver.findElement(id("newListTitle")).sendKeys(this.listTitle);
         webDriver.findElement(id("btnAddNewList")).click();
     }
 
-    @Then("^she sees the new list with title '(.*)' in her shopping lists$")
-    public void she_sees_the_new_list_with_title_in_her_shopping_lists(String listTitle) throws Throwable {
+    @Then("^she sees the new list in her shopping lists$")
+    public void she_sees_the_new_list_in_her_shopping_lists() throws Throwable {
         new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(className("shopping-list")));
         assertThat(webDriver.findElement(id("shopping-lists"))).isNotNull();
         assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo("My shopping lists (1)");
