@@ -1,5 +1,6 @@
 package fr.xebia.shoppinglist.users;
 
+import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -25,10 +26,15 @@ public class User {
     }
 
     public User(Long id, String email, String username, String password) {
-        this.id = id;
+        this(id, email, username, password, newArrayList());
+    }
+
+    public User(Long userId, String email, String username, String password, ArrayList<ShoppingList> shoppingLists) {
+        this.id = userId;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.lists.addAll(shoppingLists);
     }
 
     @Override

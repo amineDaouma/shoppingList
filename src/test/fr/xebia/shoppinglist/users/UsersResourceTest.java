@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import com.google.common.collect.Lists;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsersResourceTest {
@@ -72,5 +73,40 @@ public class UsersResourceTest {
 
         verify(userRepository).remove(12345L);
         assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
+    }
+
+    @Test
+    public void should_add_one_product_to_a_list() {
+        // Given
+        Long userId = 54321L;
+        Long listId = 132L;
+
+        User expectedUser = new User(userId, "test@test.fr", "test", "password", Lists.newArrayList(new ShoppingList(listId, "Romantic dinner")));
+        given(userRepository.get(userId)).willReturn(expectedUser);
+
+        // When
+        Response response = resource.addProductToList(userId, listId, "Salad");
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
+        assertThat(response.getEntity()).isEqualTo("Salad");
+    }
+
+    @Test
+    public void should_retrieve_a_list() {
+        // Given
+        Long userId = 54321L;
+        Long listId = 132L;
+
+        ShoppingList expectedList = new ShoppingList(listId, "Romantic dinner");
+        User expectedUser = new User(userId, "test@test.fr", "test", "password", Lists.newArrayList(expectedList));
+        given(userRepository.get(userId)).willReturn(expectedUser);
+
+        // When
+        Response response = resource.retrieveList(userId, listId);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
+        assertThat(response.getEntity()).isEqualTo(expectedList);
     }
 }
