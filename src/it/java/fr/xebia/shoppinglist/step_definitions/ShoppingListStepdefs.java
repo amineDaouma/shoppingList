@@ -1,8 +1,10 @@
 package fr.xebia.shoppinglist.step_definitions;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.By.linkText;
 import static org.openqa.selenium.By.xpath;
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import org.openqa.selenium.WebDriver;
@@ -45,6 +47,16 @@ public class ShoppingListStepdefs {
         webDriver.findElement(id("btnAddNewList")).click();
     }
 
+    @When("^she adds '(.*)' in the list$")
+    public void she_adds_a_product_in_the_list(String product) throws Throwable {
+        new WebDriverWait(webDriver, SECONDS.toSeconds(1L)).until(presenceOfElementLocated(className("shopping-list")));
+        webDriver.findElement(linkText(listTitle)).click();
+        assertThat(webDriver.findElement(id("products"))).isNotNull();
+
+        webDriver.findElement(id("newProduct")).sendKeys(product);
+        webDriver.findElement(id("btnAddProduct")).click();
+    }
+
     @Then("^she sees the new list in her shopping lists$")
     public void she_sees_the_new_list_in_her_shopping_lists() throws Throwable {
         new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(className("shopping-list")));
@@ -53,6 +65,15 @@ public class ShoppingListStepdefs {
         assertThat(webDriver.findElements(className("shopping-list"))).hasSize(1);
         WebElement createdList = webDriver.findElements(className("shopping-list")).get(0);
         assertThat(createdList.getText()).isEqualTo(listTitle);
+    }
+
+    @Then("^the list contains the product '(.*)'$")
+    public void the_list_contains_the_product(String product) throws Throwable {
+        assertThat(webDriver.findElement(id("products"))).isNotNull();
+        assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo(listTitle + " (1)");
+        assertThat(webDriver.findElements(className("product"))).hasSize(1);
+        WebElement existingProduct = webDriver.findElements(className("product")).get(0);
+        assertThat(existingProduct.getText()).isEqualTo(product);
     }
 
     @After
