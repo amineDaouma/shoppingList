@@ -6,6 +6,7 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import org.junit.After;
 import org.junit.Test;
 import fr.xebia.shoppinglist.users.User;
 
@@ -26,7 +27,10 @@ public class NewAccountIT {
                 body("username", equalTo("norman")).
                 body("password", equalTo("password"))
         ;
+    }
 
+    @After
+    public void removeUser() {
         when().
                 delete("/api/users/1").
         then().

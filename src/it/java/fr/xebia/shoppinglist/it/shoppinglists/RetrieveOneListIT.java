@@ -5,32 +5,17 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.emptyIterable;
+import org.junit.Rule;
 import org.junit.Test;
-import fr.xebia.shoppinglist.users.User;
+import fr.xebia.shoppinglist.it.rules.ListRule;
 
 public class RetrieveOneListIT {
 
+    @Rule
+    public ListRule listRule = new ListRule();
+
     @Test
-    public void
-    should_add_one_product_to_a_list() {
-        given().
-                body(new User("test@test.fr", "norman", "password")).
-                contentType(JSON).
-        when().
-                post("/api/users").
-        then().
-                statusCode(201)
-        ;
-
-        given().
-                body("Romantic dinner").
-                contentType(JSON).
-        when().
-                post("/api/users/1/lists").
-        then().
-                statusCode(201)
-        ;
-
+    public void should_retrieve_one_list() {
         given().
                 contentType(JSON).
         when().
@@ -41,14 +26,6 @@ public class RetrieveOneListIT {
                 body("id", equalTo(1)).
                 body("title", equalTo("Romantic dinner")).
                 body("products", emptyIterable())
-        ;
-
-        given().
-                contentType(JSON).
-        when().
-                delete("/api/users/1").
-        then().
-                statusCode(200)
         ;
     }
 }
