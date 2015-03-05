@@ -1,5 +1,5 @@
 shoppingList.controller('MyAccountCtrl', [ '$scope', '$http', '$location', function($scope, $http, $location) {
-    $scope.newListTitle = '';
+    $scope.newListName = '';
     $scope.myShoppingLists = [];
 
     $http.get('/api/users/1/lists')
@@ -9,10 +9,10 @@ shoppingList.controller('MyAccountCtrl', [ '$scope', '$http', '$location', funct
     ;
 
     $scope.create = function () {
-        $http.post('/api/users/1/lists', $scope.newListTitle)
+        $http.post('/api/users/1/lists', $scope.newListName)
             .success(function(data) {
                 $scope.myShoppingLists.push(data);
-                $scope.newListTitle = "";
+                $scope.newListName = "";
                 $location.path('/me');
             });
     };

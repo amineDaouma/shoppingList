@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-sm-4 col-sm-offset-8">
             <div class="input-group">
-                <input type="text" class="form-control" id="newListTitle" ng-model="newListTitle" placeholder="Fill title" required>
+                <input type="text" class="form-control" id="newListName" ng-model="newListName" placeholder="Fill name" required>
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="button" id="btnAddNewList" ng-click="create()">Create new</button>
                 </span>
@@ -18,7 +18,7 @@
     <div class="row">
         <ul>
             <li class="shopping-list" ng-repeat="list in myShoppingLists" value="{{list.id}}">
-                <a href="#/lists/{{list.id}}">{{list.title}}</a>
+                <a href="#/lists/{{list.id}}">{{list.name}}</a>
             </li>
         </ul>
     </div>

@@ -46,7 +46,7 @@ public class UsersResourceTest {
         assertThat(response.getStatus()).isEqualTo(201);
         ShoppingList list = (ShoppingList) response.getEntity();
         assertThat(list.id).isEqualTo(1L);
-        assertThat(list.title).isEqualTo("Apéro tonight");
+        assertThat(list.name).isEqualTo("Apéro tonight");
     }
 
     @Test

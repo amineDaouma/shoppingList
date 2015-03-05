@@ -34,7 +34,7 @@ public class AddProductIT {
                 statusCode(200).
                 body(matchesJsonSchemaInClasspath("schemas/list.json")).
                 body("id", equalTo(1)).
-                body("title", equalTo("Romantic dinner")).
+                body("name", equalTo("Romantic dinner")).
                 body("products", hasItems("Salad"))
         ;
     }

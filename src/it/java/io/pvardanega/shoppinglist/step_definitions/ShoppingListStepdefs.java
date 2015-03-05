@@ -19,7 +19,7 @@ import cucumber.api.java.en.When;
 public class ShoppingListStepdefs {
 
     private WebDriver webDriver;
-    private String listTitle;
+    private String listName;
 
     @Inject
     public ShoppingListStepdefs(WebDriver webDriver) {
@@ -40,17 +40,17 @@ public class ShoppingListStepdefs {
         assertThat(webDriver.getCurrentUrl()).endsWith("/me");
     }
 
-    @When("^she creates a new list with title '(.*)'$")
-    public void she_creates_a_new_list_with_title(String listTitle) throws Throwable {
-        this.listTitle = listTitle;
-        webDriver.findElement(id("newListTitle")).sendKeys(this.listTitle);
+    @When("^she creates a new list with name '(.*)'$")
+    public void she_creates_a_new_list_with_name(String listName) throws Throwable {
+        this.listName = listName;
+        webDriver.findElement(id("newListName")).sendKeys(this.listName);
         webDriver.findElement(id("btnAddNewList")).click();
     }
 
     @When("^she adds '(.*)' in the list$")
     public void she_adds_a_product_in_the_list(String product) throws Throwable {
         new WebDriverWait(webDriver, SECONDS.toSeconds(1L)).until(presenceOfElementLocated(className("shopping-list")));
-        webDriver.findElement(linkText(listTitle)).click();
+        webDriver.findElement(linkText(listName)).click();
         assertThat(webDriver.findElement(id("products"))).isNotNull();
 
         webDriver.findElement(id("newProduct")).sendKeys(product);
@@ -64,13 +64,13 @@ public class ShoppingListStepdefs {
         assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo("My shopping lists (1)");
         assertThat(webDriver.findElements(className("shopping-list"))).hasSize(1);
         WebElement createdList = webDriver.findElements(className("shopping-list")).get(0);
-        assertThat(createdList.getText()).isEqualTo(listTitle);
+        assertThat(createdList.getText()).isEqualTo(listName);
     }
 
     @Then("^the list contains the product '(.*)'$")
     public void the_list_contains_the_product(String product) throws Throwable {
         assertThat(webDriver.findElement(id("products"))).isNotNull();
-        assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo(listTitle + " (1)");
+        assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo(listName + " (1)");
         assertThat(webDriver.findElements(className("product"))).hasSize(1);
         WebElement existingProduct = webDriver.findElements(className("product")).get(0);
         assertThat(existingProduct.getText()).isEqualTo(product);

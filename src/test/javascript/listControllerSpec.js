@@ -6,7 +6,7 @@ describe('Manage list controller', function() {
         scope,
         ctrl,
         param,
-        list = {id: 1, title: "MyList", products: ["milk", "eggs", "pastas"]};
+        list = {id: 1, name: "MyList", products: ["milk", "eggs", "pastas"]};
 
     beforeEach(module('shopping-list'));
 

@@ -9,7 +9,7 @@
       "id": {
         "type": "number"
       },
-      "title": {
+      "name": {
         "type": "string"
       },
       "products": {
@@ -19,6 +19,6 @@
         }
       }
     },
-    "required": ["id", "title", "products"]
+    "required": ["id", "name", "products"]
   }
 }

@@ -25,7 +25,7 @@ public class NewListsIT {
                 statusCode(201).
                 body(matchesJsonSchemaInClasspath("schemas/list.json")).
                 body("id", equalTo(1)).
-                body("title", equalTo("Apero tonight")).
+                body("name", equalTo("Apero tonight")).
                 body("products", emptyIterable())
         ;
     }

@@ -62,9 +62,9 @@ public class UsersResource {
 
     @Path("{userId}/lists")
     @POST
-    public Response addNewList(@PathParam("userId") Long userId, String shoppingListTitle) {
+    public Response addNewList(@PathParam("userId") Long userId, String listName) {
         User user = userRepository.get(userId);
-        ShoppingList shoppingList = new ShoppingList(user.lists.size() + 1L, shoppingListTitle);
+        ShoppingList shoppingList = new ShoppingList(user.lists.size() + 1L, listName);
         user.lists.add(shoppingList);
         return Response.
                 ok().

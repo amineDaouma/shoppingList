@@ -5,8 +5,8 @@ describe('My account controller', function() {
     var httpBackend,
         scope,
         ctrl,
-        newList = {id: 2, title: 'Apéro tonight'},
-        lists = [{id: 1, title: 'Romantic dinner'}];
+        newList = {id: 2, name: 'Apéro tonight'},
+        lists = [{id: 1, name: 'Romantic dinner'}];
 
     beforeEach(module('shopping-list'));
 
@@ -18,16 +18,16 @@ describe('My account controller', function() {
     }));
 
     it('it should initiate MyAccountCtrl', function() {
-        expect(scope.newListTitle).toBeDefined();
+        expect(scope.newListName).toBeDefined();
         expect(scope.myShoppingLists).toBeDefined();
     });
 
     it('it should create one new shopping list', inject(function($location) {
         httpBackend
-            .whenPOST('/api/users/1/lists', newList.title)
+            .whenPOST('/api/users/1/lists', newList.name)
             .respond(201, newList);
 
-        scope.newListTitle = newList.title;
+        scope.newListName = newList.name;
 
         scope.create();
         httpBackend.flush();
