@@ -93,6 +93,7 @@
                 <configuration>
                     <stopPort>8005</stopPort>
                     <stopKey>STOP</stopKey>
+                    <stopWait>10</stopWait>
                 </configuration>
                 <executions>
                     <execution>
