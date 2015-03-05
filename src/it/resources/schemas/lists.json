@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Slots",
+  "type": "array",
+  "items": {
+    "title": "List",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "title": {
+        "type": "string"
+      },
+      "products": {
+        "type": "array",
+        "items" : {
+          "type" : "string"
+        }
+      }
+    },
+    "required": ["id", "title", "products"]
+  }
+}

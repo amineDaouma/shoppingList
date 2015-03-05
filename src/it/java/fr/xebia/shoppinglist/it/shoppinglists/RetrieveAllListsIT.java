@@ -1,7 +1,7 @@
 package fr.xebia.shoppinglist.it.shoppinglists;
 
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.equalTo;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import org.junit.Rule;
 import org.junit.Test;
 import fr.xebia.shoppinglist.it.rules.ListRule;
@@ -17,7 +17,7 @@ public class RetrieveAllListsIT {
                 get("/api/users/1/lists").
         then().
                 statusCode(200).
-                body(equalTo("[{\"title\":\"Romantic dinner\",\"id\":1,\"products\":[]}]"))
+                body(matchesJsonSchemaInClasspath("schemas/lists.json"))
         ;
     }
 }

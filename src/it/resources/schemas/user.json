@@ -14,7 +14,27 @@
         },
         "password": {
             "type": "string"
+        },
+        "lists": {
+            "type": "array",
+            "items": {
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "products": {
+                        "type": "array",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    }
+                },
+                "required": ["id", "title", "products"]
+            }
         }
     },
-    "required": ["id", "email", "username", "password"]
+    "required": ["id", "email", "username", "password", "lists"]
 }

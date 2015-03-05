@@ -4,6 +4,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import org.junit.After;
@@ -25,7 +26,8 @@ public class NewAccountIT {
                 body("id", notNullValue()).
                 body("email", equalTo("test@test.fr")).
                 body("username", equalTo("norman")).
-                body("password", equalTo("password"))
+                body("password", equalTo("password")).
+                body("lists", emptyIterable())
         ;
     }
 
