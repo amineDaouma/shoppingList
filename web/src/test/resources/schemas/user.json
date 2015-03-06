@@ -3,7 +3,7 @@
     "title": "User",
     "type": "object",
     "properties": {
-        "id": {
+        "userId": {
             "type": "number"
         },
         "email": {
@@ -11,30 +11,7 @@
         },
         "username": {
             "type": "string"
-        },
-        "password": {
-            "type": "string"
-        },
-        "lists": {
-            "type": "array",
-            "items": {
-                "properties": {
-                    "id": {
-                        "type": "number"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "products": {
-                        "type": "array",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    }
-                },
-                "required": ["id", "name", "products"]
-            }
         }
     },
-    "required": ["id", "email", "username", "password", "lists"]
+    "required": ["userId", "email", "username"]
 }

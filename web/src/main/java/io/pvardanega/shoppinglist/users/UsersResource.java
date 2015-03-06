@@ -34,8 +34,8 @@ public class UsersResource {
     public Response addProductToList(@PathParam("userId") Long userId,
                                      @PathParam("listId") Long listId,
                                      String product) {
-        User user = usersRepository.get(userId);
-        user.lists.
+        UserEntity userEntity = usersRepository.get(userId);
+        userEntity.lists.
             stream().
             filter(list -> listId.equals(list.id)).
             findFirst().
@@ -43,9 +43,10 @@ public class UsersResource {
         return ok(product).build();
     }
 
+    @Deprecated
     @POST
     public Response createUser(User user) {
-        return ok(usersRepository.create(user)).status(CREATED).build();
+        return ok(usersRepository.create(user).toUser()).status(CREATED).build();
     }
 
     @Path("{userId}")
@@ -58,10 +59,10 @@ public class UsersResource {
     @Path("{userId}/lists")
     @POST
     public Response addNewList(@PathParam("userId") Long userId, String listName) {
-        User user = usersRepository.get(userId);
+        UserEntity userEntity = usersRepository.get(userId);
 
-        ShoppingList shoppingList = new ShoppingList(user.lists.size() + 1L, listName);
-        user.lists.add(shoppingList);
+        ShoppingList shoppingList = new ShoppingList(userEntity.lists.size() + 1L, listName);
+        userEntity.lists.add(shoppingList);
 
         return ok(shoppingList).status(CREATED).build();
     }
@@ -79,8 +80,8 @@ public class UsersResource {
     @GET
     public Response retrieveList(@PathParam("userId") Long userId,
                                  @PathParam("listId") Long listId) {
-        User user = usersRepository.get(userId);
-        Optional<ShoppingList> listFound = user.lists.
+        UserEntity userEntity = usersRepository.get(userId);
+        Optional<ShoppingList> listFound = userEntity.lists.
                                             stream().
                                             filter(list -> listId.equals(list.id)).
                                             findFirst();

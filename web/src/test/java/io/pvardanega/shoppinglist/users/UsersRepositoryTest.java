@@ -38,41 +38,40 @@ public class UsersRepositoryTest {
     @Test
     public void should_insert_user_in_DB_and_generate_ids() {
         User user = new User("test@test.fr", "username", "password");
-        assertThat(user.userId).isNull();
-        assertThat(user._id).isNull();
 
-        User createdUser = repository.create(user);
+        UserEntity createdUserEntity = repository.create(user);
 
-        assertThat(createdUser.userId).isGreaterThan(0L);
-        assertThat(createdUser._id).isNotNull();
-        assertThat(createdUser).isEqualToComparingOnlyGivenFields(user, "email", "username");
+        assertThat(createdUserEntity.userId).isGreaterThan(0L);
+        assertThat(createdUserEntity._id).isNotNull();
+        assertThat(createdUserEntity.email).isEqualTo(user.email);
+        assertThat(createdUserEntity.username).isEqualTo(user.username);
     }
 
     @Test
     public void should_retrieve_a_user_by_its_id() {
-        User createdUser = repository.create(new User(1234L, "test@test.fr", "test", "password"));
+        UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
 
-        User user = repository.get(createdUser.userId);
+        UserEntity userEntity = repository.get(createdUserEntity.userId);
 
-        assertThat(user).isEqualTo(createdUser);
+        assertThat(userEntity).isEqualTo(createdUserEntity);
     }
 
     @Test
     public void should_retrieve_a_user_by_its_object_id() {
-        User createdUser = repository.create(new User("test@test.fr", "test", "password"));
+        UserEntity createdUserEntity = repository.create(new User("test@test.fr", "test", "password"));
 
-        User user = repository.get(createdUser._id);
+        UserEntity userEntity = repository.get(createdUserEntity._id);
 
-        assertThat(user).isEqualTo(createdUser);
+        assertThat(userEntity).isEqualTo(createdUserEntity);
     }
 
     @Test
     public void should_remove_a_user() {
-        User createdUser = repository.create(new User("test@test.fr", "test", "password"));
+        UserEntity createdUserEntity = repository.create(new User("test@test.fr", "test", "password"));
 
-        repository.remove(createdUser.userId);
+        repository.remove(createdUserEntity.userId);
 
-        User user = repository.get(createdUser._id);
-        assertThat(user).isNull();
+        UserEntity userEntity = repository.get(createdUserEntity._id);
+        assertThat(userEntity).isNull();
     }
 }

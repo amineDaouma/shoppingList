@@ -26,21 +26,21 @@ public class UsersResourceTest {
     @Test
     public void should_persist_user_and_return_201() {
         User user = new User("test@test.fr", "test", "password");
-        User expectedUser = new User(12345L, "test@test.fr", "test", "password");
-        given(usersRepository.create(user)).willReturn(expectedUser);
+        UserEntity expectedUserEntity = new UserEntity(12345L, "test@test.fr", "test", "password");
+        given(usersRepository.create(user)).willReturn(expectedUserEntity);
 
         Response response = resource.createUser(user);
 
         assertThat(response.getStatus()).isEqualTo(201);
-        assertThat(response.getEntity()).isEqualTo(expectedUser);
+        assertThat(response.getEntity()).isEqualTo(expectedUserEntity.toUser());
     }
 
     @Test
     public void should_find_user_and_add_him_a_new_list() {
         long userId = 12345L;
 
-        User expectedUser = new User(userId, "test@test.fr", "test", "password");
-        given(usersRepository.get(userId)).willReturn(expectedUser);
+        UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password");
+        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
 
         Response response = resource.addNewList(userId, "Apéro tonight");
 
@@ -54,12 +54,12 @@ public class UsersResourceTest {
     public void should_retrieve_all_user_lists() {
         Long userId = 12345L;
 
-        User expectedUser = new User(userId, "test@test.fr", "test", "password");
+        UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password");
         ShoppingList list1 = new ShoppingList(345L, "list1");
-        expectedUser.lists.add(list1);
+        expectedUserEntity.lists.add(list1);
         ShoppingList list2 = new ShoppingList(346L, "list2");
-        expectedUser.lists.add(list2);
-        given(usersRepository.get(userId)).willReturn(expectedUser);
+        expectedUserEntity.lists.add(list2);
+        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
 
         Response response = resource.retrieveAllLists(userId);
 
@@ -82,8 +82,8 @@ public class UsersResourceTest {
         Long userId = 54321L;
         Long listId = 132L;
 
-        User expectedUser = new User(userId, "test@test.fr", "test", "password", Lists.newArrayList(new ShoppingList(listId, "Romantic dinner")));
-        given(usersRepository.get(userId)).willReturn(expectedUser);
+        UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", Lists.newArrayList(new ShoppingList(listId, "Romantic dinner")));
+        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
 
         // When
         Response response = resource.addProductToList(userId, listId, "Salad");
@@ -100,8 +100,8 @@ public class UsersResourceTest {
         Long listId = 132L;
 
         ShoppingList expectedList = new ShoppingList(listId, "Romantic dinner");
-        User expectedUser = new User(userId, "test@test.fr", "test", "password", Lists.newArrayList(expectedList));
-        given(usersRepository.get(userId)).willReturn(expectedUser);
+        UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", Lists.newArrayList(expectedList));
+        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
 
         // When
         Response response = resource.retrieveList(userId, listId);

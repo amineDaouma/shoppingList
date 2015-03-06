@@ -19,21 +19,22 @@ public class UsersRepository {
         this.mongoClient = mongoClient;
     }
 
-    public User create(User user) {
-        getUsersCollection().insert(user);
+    public UserEntity create(User user) {
+        UserEntity userToCreate = user.toEntity();
+        getUsersCollection().insert(userToCreate);
         Long userId = (long) counter.incrementAndGet();
         getUsersCollection()
-                .update(user._id)
+                .update(userToCreate._id)
                 .with("{$set: {userId: #}}", userId);
-        return get(user._id);
+        return get(userToCreate._id);
     }
 
-    public User get(Long userId) {
-        return getUsersCollection().findOne("{userId: #}", userId).as(User.class);
+    public UserEntity get(Long userId) {
+        return getUsersCollection().findOne("{userId: #}", userId).as(UserEntity.class);
     }
 
-    public User get(ObjectId id) {
-        return getUsersCollection().findOne(id).as(User.class);
+    public UserEntity get(ObjectId id) {
+        return getUsersCollection().findOne(id).as(UserEntity.class);
     }
 
     public void remove(Long userId) {
