@@ -1,17 +1,20 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "User",
-    "type": "object",
-    "properties": {
-        "userId": {
-            "type": "number"
-        },
-        "email": {
-            "type": "string"
-        },
-        "username": {
-            "type": "string"
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "User",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "number"
     },
-    "required": ["userId", "email", "username"]
+    "email": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "lists": {
+      "type": "array"
+    }
+  },
+  "required": ["userId", "email", "username", "lists"]
 }

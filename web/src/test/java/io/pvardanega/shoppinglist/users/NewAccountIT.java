@@ -4,6 +4,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static io.pvardanega.shoppinglist.users.UsersRepository.USERS_COLLECTION_NAME;
+import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import java.net.UnknownHostException;
@@ -32,7 +33,8 @@ public class NewAccountIT {
                 body(matchesJsonSchemaInClasspath("schemas/user.json")).
                 body("userId", notNullValue()).
                 body("email", equalTo("test@test.fr")).
-                body("username", equalTo("norman"))
+                body("username", equalTo("norman")).
+                body("lists", emptyIterable())
         ;
     }
 }

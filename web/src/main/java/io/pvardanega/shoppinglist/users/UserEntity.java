@@ -72,6 +72,6 @@ public class UserEntity {
     }
 
     public User toUser() {
-        return new User(userId, email, username, null);
+        return new User(userId, email, username, null, newArrayList());
     }
 }
