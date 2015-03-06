@@ -3,6 +3,7 @@ package io.pvardanega.shoppinglist.users;
 import static jersey.repackaged.com.google.common.collect.Lists.newArrayList;
 import java.util.ArrayList;
 import java.util.List;
+import org.bson.types.ObjectId;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,16 +14,23 @@ import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 )
 public class User {
 
-    protected final Long id;
-    protected final String email;
-    protected final String username;
+    protected final ObjectId _id;
+    public final Long userId;
+    public final String email;
+    public final String username;
     protected final String password;
     protected final List<ShoppingList> lists = new ArrayList<>();
 
     @JsonCreator
-    public User(@JsonProperty("email") String email,
+    public User(@JsonProperty("_id") ObjectId _id,
+                @JsonProperty("userId") Long userId,
+                @JsonProperty("email") String email,
                 @JsonProperty("username") String username,
                 @JsonProperty("password") String password) {
+        this(_id, userId, email, username, password, newArrayList());
+    }
+
+    public User(String email, String username, String password) {
         this(null, email, username, password);
     }
 
@@ -31,7 +39,12 @@ public class User {
     }
 
     public User(Long userId, String email, String username, String password, ArrayList<ShoppingList> shoppingLists) {
-        this.id = userId;
+        this(null, userId, email, username, password, shoppingLists);
+    }
+
+    private User(ObjectId _id, Long userId, String email, String username, String password, ArrayList<ShoppingList> shoppingLists) {
+        this._id = _id;
+        this.userId = userId;
         this.email = email;
         this.username = username;
         this.password = password;
@@ -45,20 +58,8 @@ public class User {
 
         User user = (User) o;
 
-        if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
+        if (!userId.equals(user.userId)) return false;
+        if (!email.equals(user.email)) return false;
+        return username.equals(user.username);
     }
 }

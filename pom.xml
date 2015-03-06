@@ -28,6 +28,14 @@
         <!-- (De)Serialisation -->
         <jackson.version>2.3.3</jackson.version>
 
+        <!-- Data access -->
+        <jongo.version>1.1</jongo.version>
+        <mongo-java-driver.version>2.13.0</mongo-java-driver.version>
+
+        <!-- Commons -->
+        <commons-lang3.version>3.3.2</commons-lang3.version>
+        <logback.version>1.1.1</logback.version>
+
         <!-- Plugins -->
         <jetty.version>9.2.5.v20141112</jetty.version>
         <maven-surefire-plugin.version>2.17</maven-surefire-plugin.version>
@@ -45,6 +53,8 @@
         <selenium-firefox-driver.version>2.44.0</selenium-firefox-driver.version>
         <httpclient.version>4.3.6</httpclient.version>
         <rest-assured.version>2.4.0</rest-assured.version>
+        <fongo.version>1.6.0</fongo.version>
+        <jongo.version>1.1</jongo.version>
     </properties>
 
     <dependencyManagement>
@@ -100,6 +110,26 @@
                 <version>${jackson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jongo</groupId>
+                <artifactId>jongo</artifactId>
+                <version>${jongo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>${mongo-java-driver.version}</version>
+            </dependency>
+
+            <!-- Commons -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <!-- Test -->
             <dependency>
                 <groupId>info.cukes</groupId>
                 <artifactId>cucumber-guice</artifactId>
@@ -167,6 +197,20 @@
                 <groupId>com.jayway.restassured</groupId>
                 <artifactId>json-schema-validator</artifactId>
                 <version>${rest-assured.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.fakemongo</groupId>
+                <artifactId>fongo</artifactId>
+                <version>${fongo.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

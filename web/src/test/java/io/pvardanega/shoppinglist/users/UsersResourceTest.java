@@ -21,13 +21,13 @@ public class UsersResourceTest {
     private UsersResource resource;
 
     @Mock
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
 
     @Test
     public void should_persist_user_and_return_201() {
         User user = new User("test@test.fr", "test", "password");
         User expectedUser = new User(12345L, "test@test.fr", "test", "password");
-        given(userRepository.create(user)).willReturn(expectedUser);
+        given(usersRepository.create(user)).willReturn(expectedUser);
 
         Response response = resource.createUser(user);
 
@@ -40,7 +40,7 @@ public class UsersResourceTest {
         long userId = 12345L;
 
         User expectedUser = new User(userId, "test@test.fr", "test", "password");
-        given(userRepository.get(userId)).willReturn(expectedUser);
+        given(usersRepository.get(userId)).willReturn(expectedUser);
 
         Response response = resource.addNewList(userId, "Apéro tonight");
 
@@ -59,7 +59,7 @@ public class UsersResourceTest {
         expectedUser.lists.add(list1);
         ShoppingList list2 = new ShoppingList(346L, "list2");
         expectedUser.lists.add(list2);
-        given(userRepository.get(userId)).willReturn(expectedUser);
+        given(usersRepository.get(userId)).willReturn(expectedUser);
 
         Response response = resource.retrieveAllLists(userId);
 
@@ -72,7 +72,7 @@ public class UsersResourceTest {
     public void should_remove_a_user() {
         Response response = resource.removeUser(12345L);
 
-        verify(userRepository).remove(12345L);
+        verify(usersRepository).remove(12345L);
         assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
     }
 
@@ -83,7 +83,7 @@ public class UsersResourceTest {
         Long listId = 132L;
 
         User expectedUser = new User(userId, "test@test.fr", "test", "password", Lists.newArrayList(new ShoppingList(listId, "Romantic dinner")));
-        given(userRepository.get(userId)).willReturn(expectedUser);
+        given(usersRepository.get(userId)).willReturn(expectedUser);
 
         // When
         Response response = resource.addProductToList(userId, listId, "Salad");
@@ -101,7 +101,7 @@ public class UsersResourceTest {
 
         ShoppingList expectedList = new ShoppingList(listId, "Romantic dinner");
         User expectedUser = new User(userId, "test@test.fr", "test", "password", Lists.newArrayList(expectedList));
-        given(userRepository.get(userId)).willReturn(expectedUser);
+        given(usersRepository.get(userId)).willReturn(expectedUser);
 
         // When
         Response response = resource.retrieveList(userId, listId);

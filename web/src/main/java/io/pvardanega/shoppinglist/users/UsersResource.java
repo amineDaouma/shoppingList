@@ -22,11 +22,11 @@ import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 @Produces(APPLICATION_JSON)
 public class UsersResource {
 
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
 
     @Inject
-    public UsersResource(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UsersResource(UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     @Path("{userId}/lists/{listId}/products")
@@ -34,7 +34,7 @@ public class UsersResource {
     public Response addProductToList(@PathParam("userId") Long userId,
                                      @PathParam("listId") Long listId,
                                      String product) {
-        User user = userRepository.get(userId);
+        User user = usersRepository.get(userId);
         user.lists.
             stream().
             filter(list -> listId.equals(list.id)).
@@ -45,20 +45,20 @@ public class UsersResource {
 
     @POST
     public Response createUser(User user) {
-        return ok(userRepository.create(user)).status(CREATED).build();
+        return ok(usersRepository.create(user)).status(CREATED).build();
     }
 
     @Path("{userId}")
     @DELETE
     public Response removeUser(@PathParam("userId") Long userId) {
-        userRepository.remove(userId);
+        usersRepository.remove(userId);
         return ok().build();
     }
 
     @Path("{userId}/lists")
     @POST
     public Response addNewList(@PathParam("userId") Long userId, String listName) {
-        User user = userRepository.get(userId);
+        User user = usersRepository.get(userId);
 
         ShoppingList shoppingList = new ShoppingList(user.lists.size() + 1L, listName);
         user.lists.add(shoppingList);
@@ -71,7 +71,7 @@ public class UsersResource {
     public Response retrieveAllLists(@PathParam("userId") Long userId) {
         return
                 ok().
-                entity(userRepository.get(userId).lists).
+                entity(usersRepository.get(userId).lists).
                 build();
     }
 
@@ -79,7 +79,7 @@ public class UsersResource {
     @GET
     public Response retrieveList(@PathParam("userId") Long userId,
                                  @PathParam("listId") Long listId) {
-        User user = userRepository.get(userId);
+        User user = usersRepository.get(userId);
         Optional<ShoppingList> listFound = user.lists.
                                             stream().
                                             filter(list -> listId.equals(list.id)).

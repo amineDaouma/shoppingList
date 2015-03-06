@@ -10,6 +10,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.ServletModule;
+import io.pvardanega.shoppinglist.users.UsersRepository;
 import io.pvardanega.shoppinglist.users.UsersResource;
 
 @ApplicationPath("api")
@@ -28,6 +29,7 @@ public class RestConfig extends ResourceConfig {
             @Override
             protected void configureServlets() {
                 bind(UsersResource.class);
+                bind(UsersRepository.class);
             }
         });
 
