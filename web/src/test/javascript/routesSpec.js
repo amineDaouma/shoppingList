@@ -13,8 +13,8 @@ describe('Application routes', function() {
             expect($route.routes['/me'].templateUrl).toEqual('views/me.html');
             expect($route.routes['/me'].controller).toEqual('MyAccountCtrl');
 
-            expect($route.routes['/lists/:listId'].templateUrl).toEqual('views/list.html');
-            expect($route.routes['/lists/:listId'].controller).toEqual('listCtrl');
+            expect($route.routes['/lists/:listName'].templateUrl).toEqual('views/list.html');
+            expect($route.routes['/lists/:listName'].controller).toEqual('listCtrl');
 
             // otherwise redirect to
             expect($route.routes[null].redirectTo).toEqual('index.html')

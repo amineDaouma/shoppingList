@@ -13,7 +13,7 @@ shoppingList.config(['$routeProvider',
                 templateUrl: 'views/me.html',
                 controller: 'MyAccountCtrl'
             }).
-            when('/lists/:listId', {
+            when('/lists/:listName', {
                 templateUrl: 'views/list.html',
                 controller: 'listCtrl'
             }).

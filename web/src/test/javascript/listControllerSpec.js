@@ -6,7 +6,7 @@ describe('Manage list controller', function() {
         scope,
         ctrl,
         param,
-        list = {id: 1, name: "MyList", products: ["milk", "eggs", "pastas"]};
+        list = {name: "MyList", products: ["milk", "eggs", "pastas"]};
 
     beforeEach(module('shopping-list'));
 
@@ -14,9 +14,9 @@ describe('Manage list controller', function() {
         httpBackend = _$httpBackend_;
         scope = $rootScope.$new();
         param = $routeParams;
-        param.listId = 12;
+        param.listName = "MyList";
         ctrl = $controller('listCtrl', {$scope: scope});
-        httpBackend.whenGET('/api/users/1/lists/12').respond(200, list);
+        httpBackend.whenGET('/api/users/1/lists/MyList').respond(200, list);
     }));
 
     it('it should initiate ListCtrl', function() {
@@ -29,13 +29,13 @@ describe('Manage list controller', function() {
     it('should add a product and notify the server', inject(function() {
         scope.newProduct = "salad";
         httpBackend
-            .whenPOST('/api/users/1/lists/12/products', scope.newProduct)
+            .whenPOST('/api/users/1/lists/MyList/products', scope.newProduct)
             .respond(201, scope.newProduct);
 
         scope.addProductToList();
 
         httpBackend.flush();
-        httpBackend.expectPOST('/lists/12/products');
+        httpBackend.expectPOST('/lists/MyList/products');
         expect(scope.list.products).toContain("salad");
         expect(scope.newProduct).toBe("");
     }));

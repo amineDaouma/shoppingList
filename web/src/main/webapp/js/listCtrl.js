@@ -2,14 +2,14 @@ shoppingList.controller('listCtrl', [ '$scope', '$http', '$routeParams', functio
     $scope.newProduct = "";
     $scope.list = {};
 
-    $http.get('/api/users/1/lists/' + $routeParams.listId)
+    $http.get('/api/users/1/lists/' + $routeParams.listName)
         .success(function (data) {
             $scope.list = data;
         })
     ;
 
     $scope.addProductToList = function () {
-        $http.post('/api/users/1/lists/' + $routeParams.listId + '/products', $scope.newProduct)
+        $http.post('/api/users/1/lists/' + $routeParams.listName + '/products', $scope.newProduct)
             .success(function (data) {
                 $scope.newProduct = "";
                 $scope.list.products.push(data);
