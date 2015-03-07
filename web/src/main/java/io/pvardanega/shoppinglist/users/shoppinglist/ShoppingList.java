@@ -11,17 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 )
 public class ShoppingList {
 
-    public final Long id;
     public final String name;
     public final List<String> products = new ArrayList<>();
 
     @JsonCreator
     public ShoppingList(@JsonProperty(value = "name") String name) {
-        this(null, name);
-    }
-
-    public ShoppingList(Long id, String name) {
-        this.id = id;
         this.name = name;
     }
 

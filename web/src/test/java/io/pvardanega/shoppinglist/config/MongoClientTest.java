@@ -18,7 +18,6 @@ public class MongoClientTest {
         assertThat(client).isNotNull();
     }
 
-    @Ignore("Fails when MongoDB is started locally")
     @Test(expected = IllegalStateException.class) public void
     should_fail_to_create_mongo_client_when_property_MONGODB_URL_is_not_provided() throws UnknownHostException {
         new MongoClient();

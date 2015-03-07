@@ -26,8 +26,14 @@ public class UserEntity {
                       @JsonProperty("userId") Long userId,
                       @JsonProperty("email") String email,
                       @JsonProperty("username") String username,
-                      @JsonProperty("password") String password) {
-        this(_id, userId, email, username, password, newArrayList());
+                      @JsonProperty("password") String password,
+                      @JsonProperty("lists") List<ShoppingList> lists) {
+        this._id = _id;
+        this.userId = userId;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.lists.addAll(lists);
     }
 
     public UserEntity(String email, String username, String password) {
@@ -38,17 +44,8 @@ public class UserEntity {
         this(id, email, username, password, newArrayList());
     }
 
-    public UserEntity(Long userId, String email, String username, String password, ArrayList<ShoppingList> shoppingLists) {
+    public UserEntity(Long userId, String email, String username, String password, List<ShoppingList> shoppingLists) {
         this(null, userId, email, username, password, shoppingLists);
-    }
-
-    private UserEntity(ObjectId _id, Long userId, String email, String username, String password, ArrayList<ShoppingList> shoppingLists) {
-        this._id = _id;
-        this.userId = userId;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.lists.addAll(shoppingLists);
     }
 
     @Override
@@ -72,6 +69,6 @@ public class UserEntity {
     }
 
     public User toUser() {
-        return new User(userId, email, username, null, newArrayList());
+        return new User(userId, email, username, null, lists);
     }
 }

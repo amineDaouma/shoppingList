@@ -7,7 +7,7 @@ public class ShoppingListTest {
 
     @Test
     public void should_add_a_product_to_the_list() {
-        ShoppingList list = new ShoppingList(1234L, "MyList");
+        ShoppingList list = new ShoppingList("MyList");
 
         list.addProduct("Salad");
 

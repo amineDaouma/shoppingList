@@ -12,18 +12,17 @@ import io.pvardanega.shoppinglist.config.ListRule;
 public class RetrieveOneListIT {
 
     @Rule
-    public ListRule listRule = new ListRule();
+    public ListRule listRule = new ListRule("Romantic dinner");
 
     @Test
     public void should_retrieve_one_list() {
         given().
                 contentType(JSON).
         when().
-                get("/api/users/1/lists/1").
+                get("/api/users/" + listRule.userId() + "/lists/" + listRule.listName).
         then().
                 statusCode(200).
                 body(matchesJsonSchemaInClasspath("schemas/list.json")).
-                body("id", equalTo(1)).
                 body("name", equalTo("Romantic dinner")).
                 body("products", emptyIterable())
         ;

@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
 @JsonAutoDetect(
         fieldVisibility = JsonAutoDetect.Visibility.ANY // mandatory for serialization
@@ -15,14 +16,14 @@ public class User {
     protected final String email;
     protected final String username;
     protected final String password;
-    protected final List<String> lists = new ArrayList<>();
+    protected final List<ShoppingList> lists = new ArrayList<>();
 
     @JsonCreator
     public User(@JsonProperty("userId") Long userId,
                 @JsonProperty("email") String email,
                 @JsonProperty("username") String username,
                 @JsonProperty("password") String password,
-                @JsonProperty("lists") List<String> lists) {
+                @JsonProperty("lists") List<ShoppingList> lists) {
         this.userId = userId;
         this.email = email;
         this.username = username;

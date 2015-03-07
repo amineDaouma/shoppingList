@@ -1,6 +1,7 @@
 package io.pvardanega.shoppinglist.users;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
@@ -29,21 +30,6 @@ public class UsersResource {
         this.usersRepository = usersRepository;
     }
 
-    @Path("{userId}/lists/{listId}/products")
-    @POST
-    public Response addProductToList(@PathParam("userId") Long userId,
-                                     @PathParam("listId") Long listId,
-                                     String product) {
-        UserEntity userEntity = usersRepository.get(userId);
-        userEntity.lists.
-            stream().
-            filter(list -> listId.equals(list.id)).
-            findFirst().
-            ifPresent(list -> list.addProduct(product));
-        return ok(product).build();
-    }
-
-    @Deprecated
     @POST
     public Response createUser(User user) {
         return ok(usersRepository.create(user).toUser()).status(CREATED).build();
@@ -59,36 +45,49 @@ public class UsersResource {
     @Path("{userId}/lists")
     @POST
     public Response addNewList(@PathParam("userId") Long userId, String listName) {
-        UserEntity userEntity = usersRepository.get(userId);
-
-        ShoppingList shoppingList = new ShoppingList(userEntity.lists.size() + 1L, listName);
-        userEntity.lists.add(shoppingList);
-
+        User user = usersRepository.get(userId).toUser();
+        Optional<ShoppingList> existingList = user.lists.
+                stream().
+                filter(list -> list.name.equals(listName))
+                .findFirst();
+        if (existingList.isPresent()) {
+            return status(CONFLICT).entity("A list with name '" + listName + "' already exists!").build();
+        }
+        ShoppingList shoppingList = new ShoppingList(listName);
+        usersRepository.addNewListTo(userId, shoppingList);
         return ok(shoppingList).status(CREATED).build();
     }
 
-    @Path("{userId}/lists")
-    @GET
-    public Response retrieveAllLists(@PathParam("userId") Long userId) {
-        return
-                ok().
-                entity(usersRepository.get(userId).lists).
-                build();
-    }
-
-    @Path("{userId}/lists/{listId}")
+    @Path("{userId}/lists/{listName}")
     @GET
     public Response retrieveList(@PathParam("userId") Long userId,
-                                 @PathParam("listId") Long listId) {
-        UserEntity userEntity = usersRepository.get(userId);
-        Optional<ShoppingList> listFound = userEntity.lists.
-                                            stream().
-                                            filter(list -> listId.equals(list.id)).
-                                            findFirst();
+                                 @PathParam("listName") String listName) {
+        Optional<ShoppingList> listFound = usersRepository.get(userId).lists.
+                stream().
+                filter(list -> list.name.equals(listName)).
+                findFirst();
 
         if (listFound.isPresent()) {
             return ok(listFound.get()).build();
         }
         return status(NOT_FOUND).build();
+    }
+
+    @Path("{userId}/lists/{listId}/products")
+    @POST
+    public Response addProductToList(@PathParam("userId") Long userId,
+                                     @PathParam("listId") String listName,
+                                     String product) {
+        Optional<ShoppingList> listFound = usersRepository.get(userId).lists.
+                stream().
+                filter(list -> list.name.equals(listName)).
+                findFirst();
+        if (listFound.isPresent()) {
+            usersRepository.addProductToList(userId, listName, product);
+            return ok(product).build();
+        }
+        return status(NOT_FOUND).
+                entity("Cannot add produt '" + product + "' to list '" + listName + "': list not found for user with id '" + userId + "'.").
+                build();
     }
 }

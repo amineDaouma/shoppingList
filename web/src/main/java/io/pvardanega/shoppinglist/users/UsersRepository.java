@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 import com.google.inject.Singleton;
 import io.pvardanega.shoppinglist.config.MongoClient;
+import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
 @Singleton
 public class UsersRepository {
@@ -17,6 +18,18 @@ public class UsersRepository {
     @Inject
     public UsersRepository(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
+    }
+
+    public void addNewListTo(Long userId, ShoppingList newList) {
+        getUsersCollection()
+                .update("{userId: #}", userId)
+                .with("{$push: {lists: #}}", newList);
+    }
+
+    public void addProductToList(Long userId, String listName, String product) {
+        getUsersCollection()
+                .update("{userId: #, lists.name: #}", userId, listName)
+                .with("{$push: {lists.$.products: #}}", product);
     }
 
     public UserEntity create(User user) {

@@ -20,7 +20,7 @@ public class AddProductIT {
                 body("Salad").
                 contentType(JSON).
         when().
-                post("/api/users/1/lists/1/products").
+                post("/api/users/" + listRule.userId() + "/lists/" + listRule.listName + "/products").
         then().
                 statusCode(200).
                 body(equalTo("Salad"))
@@ -29,12 +29,11 @@ public class AddProductIT {
         given().
                 contentType(JSON).
         when().
-                get("/api/users/1/lists/1").
+                get("/api/users/" + listRule.userId() + "/lists/" + listRule.listName).
         then().
                 statusCode(200).
                 body(matchesJsonSchemaInClasspath("schemas/list.json")).
-                body("id", equalTo(1)).
-                body("name", equalTo("Romantic dinner")).
+                body("name", equalTo(listRule.listName)).
                 body("products", hasItems("Salad"))
         ;
     }

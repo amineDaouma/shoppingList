@@ -13,7 +13,21 @@
       "type": "string"
     },
     "lists": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "products": {
+            "type": "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required": ["name", "products"]
+      }
     }
   },
   "required": ["userId", "email", "username", "lists"]

@@ -5,8 +5,7 @@ import org.junit.Test;
 
 public class UserTest {
 
-    @Test
-    public void
+    @Test public void
     should_convert_a_user_into_an_entity() {
         UserEntity userEntity = new User(1234L, "email", "username", "password").toEntity();
 
@@ -14,5 +13,6 @@ public class UserTest {
         assertThat(userEntity.email).isEqualTo("email");
         assertThat(userEntity.username).isEqualTo("username");
         assertThat(userEntity.password).isEqualTo("password");
+        assertThat(userEntity.lists).isEmpty();
     }
 }

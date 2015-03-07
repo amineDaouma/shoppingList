@@ -3,9 +3,6 @@
     "title": "List",
     "type": "object",
     "properties": {
-        "id": {
-            "type": "number"
-        },
         "name": {
             "type": "string"
         },
@@ -16,5 +13,5 @@
             }
         }
     },
-    "required": ["id", "name", "products"]
+    "required": ["name", "products"]
 }
