@@ -28,7 +28,9 @@ public class User {
         this.email = email;
         this.username = username;
         this.password = password;
-        this.lists.addAll(lists);
+        if (lists != null) {
+            this.lists.addAll(lists);
+        }
     }
 
     public User(Long id, String email, String username, String password) {
