@@ -189,6 +189,7 @@
 
                     <sourceIncludes>
                         <include>app.js</include>
+                        <include>authService.js</include>
                         <include>accountCreationCtrl.js</include>
                         <include>myAccountCtrl.js</include>
                         <include>listCtrl.js</include>
