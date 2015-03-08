@@ -181,9 +181,9 @@
                     <jsTestSrcDir>${basedir}/src/test/javascript</jsTestSrcDir>
 
                     <preloadSources>
-                        <source>${project.basedir}/src/main/webapp/js/lib/jquery-1.11.1.js</source>
-                        <source>${project.basedir}/src/main/webapp/js/lib/angular.js</source>
-                        <source>${project.basedir}/src/main/webapp/js/lib/angular-mocks.js</source>
+                        <source>${project.basedir}/src/test/javascript/lib/jquery-1.11.1.js</source>
+                        <source>${project.basedir}/src/test/javascript/lib/angular.js</source>
+                        <source>${project.basedir}/src/test/javascript/lib/angular-mocks.js</source>
                         <source>${project.basedir}/src/main/webapp/js/lib/angular-route.js</source>
                     </preloadSources>
 
