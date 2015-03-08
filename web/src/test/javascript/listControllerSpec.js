@@ -24,7 +24,7 @@ describe('Manage list controller', function() {
         httpBackend.whenGET('/api/users/12345/lists/MyList').respond(200, list);
     }));
 
-    it('it should initiate ListCtrl', function() {
+    it('should initiate ListCtrl', function() {
         httpBackend.flush();
 
         expect(scope.list).toEqual(list);

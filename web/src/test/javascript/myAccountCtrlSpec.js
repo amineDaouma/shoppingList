@@ -22,12 +22,12 @@ describe('My account controller', function() {
         httpBackend.whenGET('/api/users/12345/lists').respond(200, lists);
     }));
 
-    it('it should initiate MyAccountCtrl', function() {
+    it('should initiate MyAccountCtrl', function() {
         expect(scope.newListName).toBeDefined();
         expect(scope.myShoppingLists).toBeDefined();
     });
 
-    it('it should create one new shopping list', inject(function($location) {
+    it('should create one new shopping list', inject(function($location) {
         httpBackend
             .whenPOST('/api/users/12345/lists', newList.name)
             .respond(201, newList);
