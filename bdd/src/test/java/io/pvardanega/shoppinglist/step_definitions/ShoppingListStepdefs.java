@@ -51,7 +51,8 @@ public class ShoppingListStepdefs {
     public void she_adds_a_product_in_the_list(String product) throws Throwable {
         new WebDriverWait(webDriver, SECONDS.toSeconds(1L)).until(presenceOfElementLocated(className("shopping-list")));
         webDriver.findElement(linkText(listName)).click();
-        assertThat(webDriver.findElement(id("products"))).isNotNull();
+        new WebDriverWait(webDriver, SECONDS.toSeconds(1L)).until(presenceOfElementLocated(id("newProduct")));
+        assertThat(webDriver.findElement(className("products"))).isNotNull();
 
         webDriver.findElement(id("newProduct")).sendKeys(product);
         webDriver.findElement(id("btnAddProduct")).click();
@@ -69,7 +70,7 @@ public class ShoppingListStepdefs {
 
     @Then("^the list contains the product '(.*)'$")
     public void the_list_contains_the_product(String product) throws Throwable {
-        assertThat(webDriver.findElement(id("products"))).isNotNull();
+        assertThat(webDriver.findElement(className("products"))).isNotNull();
         assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo(listName + " (1)");
         assertThat(webDriver.findElements(className("product"))).hasSize(1);
         WebElement existingProduct = webDriver.findElements(className("product")).get(0);

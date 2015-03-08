@@ -1,4 +1,6 @@
-shoppingList.controller('AccountCreationCtrl', [ '$scope', '$http', '$location', 'authService', function($scope, $http, $location, authService) {
+'use strict';
+
+shoppingList.controller('accountCreationCtrl', [ '$scope', '$http', '$location', 'authService', function($scope, $http, $location, authService) {
     $scope.newAccount = {};
 
     $scope.create = function() {

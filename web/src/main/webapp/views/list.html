@@ -1,7 +1,8 @@
 <div>
     <div class="row">
-        <h3>{{list.name}} ({{list.products.length}})</h3>
+        <h3>{{listName}} ({{products().length}})</h3>
     </div>
+
     <div class="row">
         <div class="col-sm-4">
             <div class="input-group">
@@ -12,9 +13,10 @@
             </div>
         </div>
     </div>
+
     <div class="row">
-        <ul id="products">
-            <li class="product" ng-repeat="product in list.products" value="{{product}}">{{product}}</li>
+        <ul class="products">
+            <li ng-repeat="product in products()" class="product">{{product}}</li>
         </ul>
     </div>
 </div>

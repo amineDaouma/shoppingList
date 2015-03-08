@@ -6,10 +6,13 @@ describe('My account controller', function() {
         scope,
         authService,
         ctrl,
-        newList = {id: 2, name: 'Apéro tonight'},
-        lists = [{id: 1, name: 'Romantic dinner'}];
+        newList = {name: 'Apéro tonight', products: []};
 
-    var loggedInUser = {userId: 12345, email: 'email@test.fr', username: 'username'};
+    var loggedInUser = {userId: 12345,
+                        email: 'email@test.fr',
+                        username: 'username',
+                        lists: [ {name: 'list1', products: ['milk', 'cheese']}, {name: 'list2', products: ['vegetables', 'beef']} ]
+    };
 
     beforeEach(module('shopping-list'));
 
@@ -18,13 +21,12 @@ describe('My account controller', function() {
         authService = _authService_;
         authService.setLoggedInUser(loggedInUser);
         scope = $rootScope.$new();
-        ctrl = $controller('MyAccountCtrl', {$scope: scope});
-        httpBackend.whenGET('/api/users/12345/lists').respond(200, lists);
+        ctrl = $controller('myAccountCtrl', {$scope: scope});
     }));
 
     it('should initiate MyAccountCtrl', function() {
         expect(scope.newListName).toBeDefined();
-        expect(scope.myShoppingLists).toBeDefined();
+        expect(scope.currentUser).toEqual(loggedInUser);
     });
 
     it('should create one new shopping list', inject(function($location) {
@@ -37,8 +39,8 @@ describe('My account controller', function() {
         scope.create();
         httpBackend.flush();
         httpBackend.expectPOST('/api/users/12345/lists');
-        expect(scope.myShoppingLists.length).toEqual(2);
-        expect(scope.myShoppingLists[1]).toEqual(newList);
+        expect(scope.currentUser.lists.length).toEqual(3);
+        expect(scope.currentUser.lists[2]).toEqual(newList);
         expect($location.path()).toBe('/me');
     }));
 

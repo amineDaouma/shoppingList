@@ -1,7 +1,7 @@
 <div id="shopping-lists">
 
     <div class="row">
-        <h3>My shopping lists ({{myShoppingLists.length}})</h3>
+        <h3>My shopping lists ({{currentUser.lists.length}})</h3>
     </div>
 
     <div class="row">
@@ -16,10 +16,8 @@
     </div>
 
     <div class="row">
-        <ul>
-            <li class="shopping-list" ng-repeat="list in myShoppingLists" value="{{list.id}}">
-                <a href="#/lists/{{list.id}}">{{list.name}}</a>
-            </li>
+        <ul class="shopping-list" ng-repeat="list in currentUser.lists">
+            <li><a href="#/lists/{{list.name}}">{{list.name}}</a></li>
         </ul>
     </div>
 

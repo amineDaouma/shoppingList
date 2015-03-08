@@ -23,7 +23,7 @@ describe('Create account controller', function() {
         authService = _authService_;
         httpBackend = _$httpBackend_;
         scope = $rootScope.$new();
-        ctrl = $controller('AccountCreationCtrl', {$scope: scope});
+        ctrl = $controller('accountCreationCtrl', {$scope: scope});
     }));
 
     it('should initiate AccountCreationCtrl', function() {

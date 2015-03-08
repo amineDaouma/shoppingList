@@ -1,19 +1,40 @@
-shoppingList.controller('listCtrl', [ '$scope', '$http', '$routeParams', 'authService', function($scope, $http, $routeParams, authService) {
-    $scope.newProduct = "";
-    $scope.list = {};
+'use strict';
 
-    $http.get('/api/users/' + authService.currentUser().userId + '/lists/' + $routeParams.listName)
-        .success(function (data) {
-            $scope.list = data;
-        })
-    ;
+shoppingList.controller('listCtrl', [ '$scope', '$http', '$routeParams', 'authService', function($scope, $http, $routeParams, authService) {
+    $scope.newProduct = '';
+    $scope.listName = '';
+    $scope.currentUser = {};
+
+    $scope.$watch(authService.isLoggedIn, function () {
+        $scope.currentUser = authService.currentUser();
+    });
+
+    function initCurrentUser() {
+        $scope.listName = $routeParams.listName;
+        $scope.currentUser = authService.currentUser();
+    }
 
     $scope.addProductToList = function () {
-        $http.post('/api/users/' + authService.currentUser().userId + '/lists/' + $routeParams.listName + '/products', $scope.newProduct)
+        $http.put('/api/users/' + $scope.currentUser.userId + '/lists/' + $scope.listName + '/products', $scope.newProduct)
             .success(function (data) {
-                $scope.newProduct = "";
-                $scope.list.products.push(data);
-            }
-        );
+                $scope.currentUser.lists.forEach(function (element) {
+                    if (element.name == $scope.listName) {
+                        element.products.push(data);
+                    }
+                });
+                $scope.newProduct = '';
+            });
     };
+
+    $scope.products = function () {
+        var products;
+        $scope.currentUser.lists.forEach(function (element) {
+            if (element.name == $scope.listName) {
+                products = element.products;
+            }
+        });
+        return products;
+    };
+
+    initCurrentUser();
 }]);

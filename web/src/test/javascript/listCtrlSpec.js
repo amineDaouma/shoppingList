@@ -6,10 +6,9 @@ describe('Manage list controller', function() {
         scope,
         authService,
         ctrl,
-        param,
-        list = {name: "MyList", products: ["milk", "eggs", "pastas"]};
+        param;
 
-    var loggedInUser = {userId: 12345, email: 'email@test.fr', username: 'username'};
+    var loggedInUser = {userId: 12345, email: 'email@test.fr', username: 'username', lists: [{name: "MyList", products: ["milk", "eggs", "pastas"]}]};
 
     beforeEach(module('shopping-list'));
 
@@ -21,27 +20,29 @@ describe('Manage list controller', function() {
         param = $routeParams;
         param.listName = "MyList";
         ctrl = $controller('listCtrl', {$scope: scope});
-        httpBackend.whenGET('/api/users/12345/lists/MyList').respond(200, list);
     }));
 
     it('should initiate ListCtrl', function() {
-        httpBackend.flush();
-
-        expect(scope.list).toEqual(list);
         expect(scope.newProduct).toBeDefined();
+        expect(scope.listName).toBe('MyList');
+        expect(scope.currentUser).toEqual(loggedInUser);
+    });
+
+    it('should return all products from current list', function() {
+        expect(scope.products()).toEqual(loggedInUser.lists[0].products);
     });
 
     it('should add a product and notify the server', inject(function() {
         scope.newProduct = "salad";
         httpBackend
-            .whenPOST('/api/users/12345/lists/MyList/products', scope.newProduct)
+            .whenPUT('/api/users/12345/lists/MyList/products', scope.newProduct)
             .respond(201, scope.newProduct);
 
         scope.addProductToList();
 
         httpBackend.flush();
         httpBackend.expectPOST('/api/users/12345/lists/MyList/products');
-        expect(scope.list.products).toContain("salad");
+        expect(scope.currentUser.lists[0].products).toContain("salad");
         expect(scope.newProduct).toBe("");
     }));
 });

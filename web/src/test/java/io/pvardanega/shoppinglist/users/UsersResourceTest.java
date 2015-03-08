@@ -2,6 +2,7 @@ package io.pvardanega.shoppinglist.users;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -95,6 +96,7 @@ public class UsersResourceTest {
         verify(usersRepository).addProductToList(userId, listName, "Salad");
         assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
         assertThat(response.getEntity()).isEqualTo("Salad");
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
     }
 
     @Test

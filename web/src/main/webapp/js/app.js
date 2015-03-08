@@ -7,11 +7,11 @@ shoppingList.config(['$routeProvider',
         $routeProvider.
             when('/signin', {
                 templateUrl: 'views/signin.html',
-                controller: 'AccountCreationCtrl'
+                controller: 'accountCreationCtrl'
             }).
             when('/me', {
                 templateUrl: 'views/me.html',
-                controller: 'MyAccountCtrl'
+                controller: 'myAccountCtrl'
             }).
             when('/lists/:listName', {
                 templateUrl: 'views/list.html',

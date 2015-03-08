@@ -1,6 +1,7 @@
 package io.pvardanega.shoppinglist.users;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -12,6 +13,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -74,7 +76,7 @@ public class UsersResource {
     }
 
     @Path("{userId}/lists/{listId}/products")
-    @POST
+    @PUT
     public Response addProductToList(@PathParam("userId") Long userId,
                                      @PathParam("listId") String listName,
                                      String product) {
@@ -84,7 +86,7 @@ public class UsersResource {
                 findFirst();
         if (listFound.isPresent()) {
             usersRepository.addProductToList(userId, listName, product);
-            return ok(product).build();
+            return ok(product).type(TEXT_PLAIN).build();
         }
         return status(NOT_FOUND).
                 entity("Cannot add produt '" + product + "' to list '" + listName + "': list not found for user with id '" + userId + "'.").
