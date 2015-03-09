@@ -1,8 +1,15 @@
 <div id="shopping-lists">
 
+    <div ng-show="errorMessage">
+        <div class="alert alert-danger fade in" role="alert">
+            <span>{{errorMessage}}</span>
+        </div>
+    </div>
+
     <div class="row">
         <h3>My shopping lists ({{currentUser.lists.length}})</h3>
     </div>
+
 
     <div class="row">
         <div class="col-sm-4 col-sm-offset-8">

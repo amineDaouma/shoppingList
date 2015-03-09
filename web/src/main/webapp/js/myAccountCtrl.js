@@ -1,8 +1,9 @@
 'use strict';
 
-shoppingList.controller('myAccountCtrl', [ '$scope', '$http', '$location', 'authService', function($scope, $http, $location, authService) {
+shoppingList.controller('myAccountCtrl', [ '$scope', '$http', 'authService', function($scope, $http, authService) {
     $scope.newListName = '';
     $scope.currentUser = {};
+    $scope.errorMessage = '';
 
     $scope.$watch( authService.isLoggedIn, function () {
         $scope.currentUser = authService.currentUser();
@@ -15,11 +16,20 @@ shoppingList.controller('myAccountCtrl', [ '$scope', '$http', '$location', 'auth
     $scope.create = function () {
         $http.post('/api/users/' + $scope.currentUser.userId + '/lists', $scope.newListName)
             .success(function(data) {
+                cleanErrorMessage();
                 $scope.currentUser.lists.push(data);
                 $scope.newListName = '';
-                $location.path('/me');
-            });
+            })
+            .error(function(data) {
+                $scope.errorMessage = data;
+                $scope.newListName = '';
+            })
+        ;
     };
+
+    function cleanErrorMessage() {
+        $scope.errorMessage = '';
+    }
 
     initCurrentUser();
 }]);

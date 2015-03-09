@@ -76,6 +76,7 @@ public class UsersResourceTest {
 
         verify(usersRepository, never()).addNewListTo(anyLong(), any(ShoppingList.class));
         assertThat(response.getStatus()).isEqualTo(409);
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
         String errorMessage = (String) response.getEntity();
         assertThat(errorMessage).isEqualTo("A list with name 'Apéro tonight' already exists!");
     }
@@ -114,6 +115,7 @@ public class UsersResourceTest {
         // Then
         verify(usersRepository, never()).addProductToList(userId, listName, "Salad");
         assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
         assertThat(response.getEntity()).isEqualTo("Cannot add produt 'Salad' to list 'unknown': list not found for user with id '" + userId + "'.");
     }
 

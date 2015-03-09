@@ -2,6 +2,7 @@ package io.pvardanega.shoppinglist.users;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -47,13 +48,12 @@ public class UsersResource {
     @Path("{userId}/lists")
     @POST
     public Response addNewList(@PathParam("userId") Long userId, String listName) {
-        User user = usersRepository.get(userId).toUser();
-        Optional<ShoppingList> existingList = user.lists.
+        Optional<ShoppingList> existingList = usersRepository.get(userId).lists.
                 stream().
                 filter(list -> list.name.equals(listName))
                 .findFirst();
         if (existingList.isPresent()) {
-            return status(CONFLICT).entity("A list with name '" + listName + "' already exists!").build();
+            return status(CONFLICT).entity("A list with name '" + listName + "' already exists!").type(TEXT_PLAIN_TYPE).build();
         }
         ShoppingList shoppingList = new ShoppingList(listName);
         usersRepository.addNewListTo(userId, shoppingList);
@@ -90,6 +90,7 @@ public class UsersResource {
         }
         return status(NOT_FOUND).
                 entity("Cannot add produt '" + product + "' to list '" + listName + "': list not found for user with id '" + userId + "'.").
+                type(TEXT_PLAIN_TYPE).
                 build();
     }
 }
