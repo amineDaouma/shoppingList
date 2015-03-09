@@ -1,6 +1,7 @@
 package io.pvardanega.shoppinglist.step_definitions;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.id;
@@ -33,7 +34,7 @@ public class ShoppingListStepdefs {
         webDriver.findElement(id("btnSignIn")).click();
         new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("formNewAccount")));
         webDriver.findElement(id("username")).sendKeys(username);
-        webDriver.findElement(id("email")).sendKeys(username + "@yopmail.com");
+        webDriver.findElement(id("email")).sendKeys(username + randomAlphanumeric(5) + "@yopmail.com");
         webDriver.findElement(id("password")).sendKeys("password");
         webDriver.findElement(id("btnSubmit")).click();
         new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("shopping-lists")));
