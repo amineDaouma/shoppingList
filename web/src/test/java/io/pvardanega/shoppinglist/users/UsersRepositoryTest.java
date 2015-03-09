@@ -4,6 +4,7 @@ import static io.pvardanega.shoppinglist.users.UsersRepository.USERS_COLLECTION_
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import java.util.Optional;
+import org.bson.types.ObjectId;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.junit.After;
@@ -54,18 +55,38 @@ public class UsersRepositoryTest {
     should_retrieve_a_user_by_its_id() {
         UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
 
-        UserEntity userEntity = repository.get(createdUserEntity.userId);
+        Optional<UserEntity> userEntity = repository.get(createdUserEntity.userId);
 
-        assertThat(userEntity).isEqualTo(createdUserEntity);
+        assertThat(userEntity.isPresent()).isTrue();
+        assertThat(userEntity.get()).isEqualTo(createdUserEntity);
+    }
+
+    @Test public void
+    should_not_retrieve_a_user_when_searching_with_an_unknwon_id() {
+        repository.create(new User(1234L, "test@test.fr", "test", "password"));
+
+        Optional<UserEntity> userEntity = repository.get(98765L);
+
+        assertThat(userEntity.isPresent()).isFalse();
     }
 
     @Test public void
     should_retrieve_a_user_by_its_object_id() {
         UserEntity createdUserEntity = repository.create(new User("test@test.fr", "test", "password"));
 
-        UserEntity userEntity = repository.get(createdUserEntity._id);
+        Optional<UserEntity> userEntity = repository.get(createdUserEntity._id);
 
-        assertThat(userEntity).isEqualTo(createdUserEntity);
+        assertThat(userEntity.isPresent()).isTrue();
+        assertThat(userEntity.get()).isEqualTo(createdUserEntity);
+    }
+
+    @Test public void
+    should_not_retrieve_a_user_when_searching_with_an_unknwon_object_id() {
+        repository.create(new User("test@test.fr", "test", "password"));
+
+        Optional<UserEntity> userEntity = repository.get(new ObjectId());
+
+        assertThat(userEntity.isPresent()).isFalse();
     }
 
     @Test public void
@@ -79,8 +100,8 @@ public class UsersRepositoryTest {
     }
 
     @Test public void
-    should_not_retrieve_a_user_by_its_email() {
-        UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
+    should_not_retrieve_a_user_when_searching_with_an_unknwon_email() {
+        repository.create(new User(1234L, "test@test.fr", "test", "password"));
 
         Optional<UserEntity> userEntity = repository.findByEmail("unknown@test.fr");
 
@@ -94,8 +115,8 @@ public class UsersRepositoryTest {
 
         repository.addNewListTo(userEntity.userId, new ShoppingList("list1"));
 
-        userEntity = repository.get(userEntity.userId);
-        assertThat(userEntity.lists).hasSize(1).extracting("name").containsExactly("list1");
+        Optional<UserEntity> updatedUser = repository.get(userEntity.userId);
+        assertThat(updatedUser.get().lists).hasSize(1).extracting("name").containsExactly("list1");
     }
 
     @Test public void
@@ -114,8 +135,8 @@ public class UsersRepositoryTest {
         repository.addProductToList(userId, listName2, chips);
         repository.addProductToList(userId, listName, chips);
 
-        ShoppingList list1 = repository.get(userId).lists.stream().filter(l -> l.name.equals(listName)).findFirst().get();
-        ShoppingList list2 = repository.get(userId).lists.stream().filter(l -> l.name.equals(listName2)).findFirst().get();
+        ShoppingList list1 = repository.get(userId).get().lists.stream().filter(l -> l.name.equals(listName)).findFirst().get();
+        ShoppingList list2 = repository.get(userId).get().lists.stream().filter(l -> l.name.equals(listName2)).findFirst().get();
         assertThat(list1.products).containsOnly(champagne, chips);
         assertThat(list2.products).containsOnly(chips);
     }
@@ -126,7 +147,7 @@ public class UsersRepositoryTest {
 
         repository.remove(createdUserEntity.userId);
 
-        UserEntity userEntity = repository.get(createdUserEntity._id);
-        assertThat(userEntity).isNull();
+        Optional<UserEntity> userEntity = repository.get(createdUserEntity._id);
+        assertThat(userEntity.isPresent()).isFalse();
     }
 }

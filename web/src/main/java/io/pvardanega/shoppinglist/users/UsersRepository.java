@@ -41,19 +41,19 @@ public class UsersRepository {
         getUsersCollection()
                 .update(userToCreate._id)
                 .with("{$set: {userId: #}}", userId);
-        return get(userToCreate._id);
+        return get(userToCreate._id).get();
     }
 
     public Optional<UserEntity> findByEmail(String email) {
         return ofNullable(getUsersCollection().findOne("{email: #}", email).as(UserEntity.class));
     }
 
-    public UserEntity get(Long userId) {
-        return getUsersCollection().findOne("{userId: #}", userId).as(UserEntity.class);
+    public Optional<UserEntity> get(Long userId) {
+        return ofNullable(getUsersCollection().findOne("{userId: #}", userId).as(UserEntity.class));
     }
 
-    public UserEntity get(ObjectId id) {
-        return getUsersCollection().findOne(id).as(UserEntity.class);
+    public Optional<UserEntity> get(ObjectId id) {
+        return ofNullable(getUsersCollection().findOne(id).as(UserEntity.class));
     }
 
     public void remove(Long userId) {

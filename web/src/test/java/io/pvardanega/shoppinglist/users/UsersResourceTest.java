@@ -70,7 +70,7 @@ public class UsersResourceTest {
     should_find_user_and_add_him_a_new_list() {
         Long userId = 12345L;
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password");
-        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
+        given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
         Response response = resource.addNewList(userId, "Apéro tonight");
 
@@ -89,7 +89,7 @@ public class UsersResourceTest {
     should_not_add_a_list_if_one_already_exists_with_this_name() {
         Long userId = 12345L;
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", asList(new ShoppingList("Apéro tonight")));
-        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
+        given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
         Response response = resource.addNewList(userId, "Apéro tonight");
 
@@ -101,13 +101,26 @@ public class UsersResourceTest {
     }
 
     @Test public void
+    should_not_add_a_list_if_user_not_found() {
+        Long userId = 12345L;
+        given(usersRepository.get(userId)).willReturn(empty());
+
+        Response response = resource.addNewList(userId, "Apéro tonight");
+
+        verify(usersRepository, never()).addNewListTo(anyLong(), any(ShoppingList.class));
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
+        assertThat((String) response.getEntity()).isEqualTo("User with id '12345' not found!");
+    }
+
+    @Test public void
     should_add_one_product_to_a_list() {
         // Given
         Long userId = 54321L;
         String listName = "Romantic dinner";
 
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", newArrayList(new ShoppingList(listName)));
-        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
+        given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
         // When
         Response response = resource.addProductToList(userId, listName, "Salad");
@@ -126,7 +139,7 @@ public class UsersResourceTest {
         String listName = "Romantic dinner";
 
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", newArrayList(new ShoppingList(listName)));
-        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
+        given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
         // When
         Response response = resource.addProductToList(userId, "unknown", "Salad");
@@ -139,6 +152,22 @@ public class UsersResourceTest {
     }
 
     @Test public void
+    should_not_add_one_product_when_user_is_not_found() {
+        // Given
+        Long userId = 54321L;
+        given(usersRepository.get(userId)).willReturn(empty());
+
+        // When
+        Response response = resource.addProductToList(userId, "unknown", "Salad");
+
+        // Then
+        verify(usersRepository, never()).addProductToList(userId, "unknown", "Salad");
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
+        assertThat(response.getEntity()).isEqualTo("User with id '" + userId + "' not found!");
+    }
+
+    @Test public void
     should_retrieve_a_list() {
         // Given
         Long userId = 54321L;
@@ -146,7 +175,7 @@ public class UsersResourceTest {
 
         ShoppingList expectedList = new ShoppingList(listName);
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", newArrayList(expectedList));
-        given(usersRepository.get(userId)).willReturn(expectedUserEntity);
+        given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
         // When
         Response response = resource.retrieveList(userId, listName);
@@ -154,6 +183,21 @@ public class UsersResourceTest {
         // Then
         assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(expectedList);
+    }
+
+    @Test public void
+    should_not_retrieve_a_list_if_user_is_not_found() {
+        // Given
+        Long userId = 54321L;
+        given(usersRepository.get(userId)).willReturn(empty());
+
+        // When
+        Response response = resource.retrieveList(userId, "any list");
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
+        assertThat((String) response.getEntity()).isEqualTo("User with id '54321' not found!");
     }
 
     @Test public void

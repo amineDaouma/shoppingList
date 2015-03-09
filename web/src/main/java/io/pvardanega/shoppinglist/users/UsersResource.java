@@ -8,6 +8,7 @@ import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -52,13 +53,16 @@ public class UsersResource {
     @Path("{userId}/lists")
     @POST
     public Response addNewList(@PathParam("userId") Long userId, String listName) {
-        Optional<ShoppingList> existingList = usersRepository.get(userId).lists.
-                stream().
-                filter(list -> list.name.equals(listName))
-                .findFirst();
+        Optional<UserEntity> user = usersRepository.get(userId);
+        if (!user.isPresent()) {
+            return status(NOT_FOUND).entity("User with id '" + userId + "' not found!").type(TEXT_PLAIN_TYPE).build();
+        }
+
+        Optional<ShoppingList> existingList = findListFromName(listName, user.get().lists);
         if (existingList.isPresent()) {
             return status(CONFLICT).entity("A list with name '" + listName + "' already exists!").type(TEXT_PLAIN_TYPE).build();
         }
+
         ShoppingList shoppingList = new ShoppingList(listName);
         usersRepository.addNewListTo(userId, shoppingList);
         return ok(shoppingList).status(CREATED).build();
@@ -68,11 +72,12 @@ public class UsersResource {
     @GET
     public Response retrieveList(@PathParam("userId") Long userId,
                                  @PathParam("listName") String listName) {
-        Optional<ShoppingList> listFound = usersRepository.get(userId).lists.
-                stream().
-                filter(list -> list.name.equals(listName)).
-                findFirst();
+        Optional<UserEntity> user = usersRepository.get(userId);
+        if (!user.isPresent()) {
+            return status(NOT_FOUND).entity("User with id '" + userId + "' not found!").type(TEXT_PLAIN_TYPE).build();
+        }
 
+        Optional<ShoppingList> listFound = findListFromName(listName, user.get().lists);
         if (listFound.isPresent()) {
             return ok(listFound.get()).build();
         }
@@ -84,10 +89,12 @@ public class UsersResource {
     public Response addProductToList(@PathParam("userId") Long userId,
                                      @PathParam("listId") String listName,
                                      String product) {
-        Optional<ShoppingList> listFound = usersRepository.get(userId).lists.
-                stream().
-                filter(list -> list.name.equals(listName)).
-                findFirst();
+        Optional<UserEntity> user = usersRepository.get(userId);
+        if (!user.isPresent()) {
+            return status(NOT_FOUND).entity("User with id '" + userId + "' not found!").type(TEXT_PLAIN_TYPE).build();
+        }
+
+        Optional<ShoppingList> listFound = findListFromName(listName, user.get().lists);
         if (listFound.isPresent()) {
             usersRepository.addProductToList(userId, listName, product);
             return ok(product).type(TEXT_PLAIN).build();
@@ -96,5 +103,12 @@ public class UsersResource {
                 entity("Cannot add produt '" + product + "' to list '" + listName + "': list not found for user with id '" + userId + "'.").
                 type(TEXT_PLAIN_TYPE).
                 build();
+    }
+
+    private Optional<ShoppingList> findListFromName(String listName, List<ShoppingList> lists) {
+        return lists.
+                stream().
+                filter(list -> list.name.equals(listName)).
+                findFirst();
     }
 }
