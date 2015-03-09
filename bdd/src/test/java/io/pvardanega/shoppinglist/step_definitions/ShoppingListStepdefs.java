@@ -1,7 +1,6 @@
 package io.pvardanega.shoppinglist.step_definitions;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.id;
@@ -18,27 +17,24 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ShoppingListStepdefs {
+    
+    private final WebDriverWait WAIT_ONE_SECOND;
 
     private WebDriver webDriver;
+    private AccountStepdefs accountStepdefs;
     private String listName;
 
     @Inject
-    public ShoppingListStepdefs(WebDriver webDriver) {
-        this.webDriver = webDriver;
+    public ShoppingListStepdefs(AccountStepdefs accountStepdefs) {
+        this.accountStepdefs = accountStepdefs;
+        this.webDriver = accountStepdefs.webDriver;
+        WAIT_ONE_SECOND = new WebDriverWait(webDriver, SECONDS.toSeconds(1L));
     }
 
     @Given("^(\\S+), an existing user$")
-    public void Claire_is_logged_in(String username) throws Throwable {
-        webDriver.navigate().to("http://localhost:8080/");
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("btnSignIn")));
-        webDriver.findElement(id("btnSignIn")).click();
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("formNewAccount")));
-        webDriver.findElement(id("username")).sendKeys(username);
-        webDriver.findElement(id("email")).sendKeys(username + randomAlphanumeric(5) + "@yopmail.com");
-        webDriver.findElement(id("password")).sendKeys("password");
-        webDriver.findElement(id("btnSubmit")).click();
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("shopping-lists")));
-        assertThat(webDriver.getCurrentUrl()).endsWith("/me");
+    public void he_she_is_an_existing_user(String username) throws Throwable {
+        accountStepdefs.user_creates_an_account(username);
+        accountStepdefs.he_she_is_logged_in();
     }
 
     @When("^she creates a new list with name '(.*)'$")
@@ -50,9 +46,9 @@ public class ShoppingListStepdefs {
 
     @When("^she adds '(.*)' in the list$")
     public void she_adds_a_product_in_the_list(String product) throws Throwable {
-        new WebDriverWait(webDriver, SECONDS.toSeconds(1L)).until(presenceOfElementLocated(className("shopping-list")));
+        WAIT_ONE_SECOND.until(presenceOfElementLocated(className("shopping-list")));
         webDriver.findElement(linkText(listName)).click();
-        new WebDriverWait(webDriver, SECONDS.toSeconds(1L)).until(presenceOfElementLocated(id("newProduct")));
+        WAIT_ONE_SECOND.until(presenceOfElementLocated(id("newProduct")));
         assertThat(webDriver.findElement(className("products"))).isNotNull();
 
         webDriver.findElement(id("newProduct")).sendKeys(product);
@@ -61,7 +57,7 @@ public class ShoppingListStepdefs {
 
     @Then("^she sees the new list in her shopping lists$")
     public void she_sees_the_new_list_in_her_shopping_lists() throws Throwable {
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(className("shopping-list")));
+        WAIT_ONE_SECOND.until(presenceOfElementLocated(className("shopping-list")));
         assertThat(webDriver.findElement(id("shopping-lists"))).isNotNull();
         assertThat(webDriver.findElement(xpath("(//h3)[1]")).getText()).isEqualTo("My shopping lists (1)");
         assertThat(webDriver.findElements(className("shopping-list"))).hasSize(1);

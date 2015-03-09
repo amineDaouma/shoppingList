@@ -1,5 +1,6 @@
 package io.pvardanega.shoppinglist.step_definitions;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.openqa.selenium.By.id;
@@ -16,19 +17,22 @@ import cucumber.api.java.en.When;
 
 public class AccountStepdefs {
 
-    private WebDriver webDriver;
+    protected final WebDriverWait WAIT_ONE_SECOND;
+
+    protected WebDriver webDriver;
 
     @Inject
     public AccountStepdefs(WebDriver webDriver) {
         this.webDriver = webDriver;
+        WAIT_ONE_SECOND = new WebDriverWait(webDriver, SECONDS.toSeconds(1L));
     }
 
     @When("^(\\S+) creates an account$")
     public void user_creates_an_account(String username) throws Throwable {
         webDriver.navigate().to("http://localhost:8080/");
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("btnSignIn")));
+        WAIT_ONE_SECOND.until(presenceOfElementLocated(id("btnSignIn")));
         webDriver.findElement(id("btnSignIn")).click();
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("formNewAccount")));
+        WAIT_ONE_SECOND.until(presenceOfElementLocated(id("formNewAccount")));
         webDriver.findElement(id("username")).sendKeys(username);
         webDriver.findElement(id("email")).sendKeys(username + randomAlphanumeric(5) + "@yopmail.com");
         webDriver.findElement(id("password")).sendKeys("password");
@@ -37,7 +41,7 @@ public class AccountStepdefs {
 
     @Then("^he is logged in$")
     public void he_she_is_logged_in() throws Throwable {
-        new WebDriverWait(webDriver, 1).until(presenceOfElementLocated(id("shopping-lists")));
+        WAIT_ONE_SECOND.until(presenceOfElementLocated(id("shopping-lists")));
         assertThat(webDriver.getCurrentUrl()).endsWith("/me");
     }
 
