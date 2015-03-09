@@ -2,6 +2,8 @@ package io.pvardanega.shoppinglist.users;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,10 +37,11 @@ public class UsersResourceTest {
     @Captor
     private ArgumentCaptor<Long> userIdCaptor;
 
-    @Test
-    public void should_persist_user_and_return_201() {
+    @Test public void
+    should_persist_user_and_return_201() {
         User user = new User("test@test.fr", "test", "password");
         UserEntity expectedUserEntity = new UserEntity(12345L, "test@test.fr", "test", "password");
+        given(usersRepository.findByEmail(user.email)).willReturn(empty());
         given(usersRepository.create(user)).willReturn(expectedUserEntity);
 
         Response response = resource.createUser(user);
@@ -47,8 +50,24 @@ public class UsersResourceTest {
         assertThat(response.getEntity()).isEqualTo(expectedUserEntity.toUser());
     }
 
-    @Test
-    public void should_find_user_and_add_him_a_new_list() {
+    @Test public void
+    should_not_create_a_user_when_email_is_already_used() {
+        User user = new User("test@test.fr", "test", "password");
+        UserEntity expectedUserEntity = new UserEntity(12345L, "test@test.fr", "test", "password");
+        given(usersRepository.findByEmail(user.email)).willReturn(of(expectedUserEntity));
+        given(usersRepository.create(user)).willReturn(expectedUserEntity);
+
+        Response response = resource.createUser(user);
+
+        verify(usersRepository, never()).addNewListTo(anyLong(), any(ShoppingList.class));
+        assertThat(response.getStatus()).isEqualTo(409);
+        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
+        String errorMessage = (String) response.getEntity();
+        assertThat(errorMessage).isEqualTo("Email 'test@test.fr' already used!");
+    }
+
+    @Test public void
+    should_find_user_and_add_him_a_new_list() {
         Long userId = 12345L;
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password");
         given(usersRepository.get(userId)).willReturn(expectedUserEntity);
@@ -66,8 +85,8 @@ public class UsersResourceTest {
         assertThat(list.products).isEmpty();
     }
 
-    @Test
-    public void should_not_add_a_list_if_one_already_exists_with_this_name() {
+    @Test public void
+    should_not_add_a_list_if_one_already_exists_with_this_name() {
         Long userId = 12345L;
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", asList(new ShoppingList("Apéro tonight")));
         given(usersRepository.get(userId)).willReturn(expectedUserEntity);
@@ -81,8 +100,8 @@ public class UsersResourceTest {
         assertThat(errorMessage).isEqualTo("A list with name 'Apéro tonight' already exists!");
     }
 
-    @Test
-    public void should_add_one_product_to_a_list() {
+    @Test public void
+    should_add_one_product_to_a_list() {
         // Given
         Long userId = 54321L;
         String listName = "Romantic dinner";
@@ -100,8 +119,8 @@ public class UsersResourceTest {
         assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
     }
 
-    @Test
-    public void should_not_add_one_product_to_an_unknown_list() {
+    @Test public void
+    should_not_add_one_product_to_an_unknown_list() {
         // Given
         Long userId = 54321L;
         String listName = "Romantic dinner";
@@ -119,8 +138,8 @@ public class UsersResourceTest {
         assertThat(response.getEntity()).isEqualTo("Cannot add produt 'Salad' to list 'unknown': list not found for user with id '" + userId + "'.");
     }
 
-    @Test
-    public void should_retrieve_a_list() {
+    @Test public void
+    should_retrieve_a_list() {
         // Given
         Long userId = 54321L;
         String listName = "Romantic dinner";
@@ -137,8 +156,8 @@ public class UsersResourceTest {
         assertThat(response.getEntity()).isEqualTo(expectedList);
     }
 
-    @Test
-    public void should_remove_a_user() {
+    @Test public void
+    should_remove_a_user() {
         Response response = resource.removeUser(12345L);
 
         verify(usersRepository).remove(12345L);

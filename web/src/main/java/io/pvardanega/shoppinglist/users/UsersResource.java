@@ -35,6 +35,10 @@ public class UsersResource {
 
     @POST
     public Response createUser(User user) {
+        Optional<UserEntity> foundUser = usersRepository.findByEmail(user.email);
+        if (foundUser.isPresent()) {
+            return status(CONFLICT).entity("Email '" + user.email + "' already used!").type(TEXT_PLAIN_TYPE).build();
+        }
         return ok(usersRepository.create(user).toUser()).status(CREATED).build();
     }
 

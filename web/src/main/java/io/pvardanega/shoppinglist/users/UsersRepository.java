@@ -1,5 +1,7 @@
 package io.pvardanega.shoppinglist.users;
 
+import static java.util.Optional.ofNullable;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.bson.types.ObjectId;
@@ -40,6 +42,10 @@ public class UsersRepository {
                 .update(userToCreate._id)
                 .with("{$set: {userId: #}}", userId);
         return get(userToCreate._id);
+    }
+
+    public Optional<UserEntity> findByEmail(String email) {
+        return ofNullable(getUsersCollection().findOne("{email: #}", email).as(UserEntity.class));
     }
 
     public UserEntity get(Long userId) {

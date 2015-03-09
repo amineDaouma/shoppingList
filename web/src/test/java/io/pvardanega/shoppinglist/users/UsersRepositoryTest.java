@@ -3,6 +3,7 @@ package io.pvardanega.shoppinglist.users;
 import static io.pvardanega.shoppinglist.users.UsersRepository.USERS_COLLECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import java.util.Optional;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.junit.After;
@@ -65,6 +66,25 @@ public class UsersRepositoryTest {
         UserEntity userEntity = repository.get(createdUserEntity._id);
 
         assertThat(userEntity).isEqualTo(createdUserEntity);
+    }
+
+    @Test public void
+    should_retrieve_a_user_by_its_email() {
+        UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
+
+        Optional<UserEntity> userEntity = repository.findByEmail(createdUserEntity.email);
+
+        assertThat(userEntity.isPresent()).isTrue();
+        assertThat(userEntity.get()).isEqualTo(createdUserEntity);
+    }
+
+    @Test public void
+    should_not_retrieve_a_user_by_its_email() {
+        UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
+
+        Optional<UserEntity> userEntity = repository.findByEmail("unknown@test.fr");
+
+        assertThat(userEntity.isPresent()).isFalse();
     }
 
     @Test public void

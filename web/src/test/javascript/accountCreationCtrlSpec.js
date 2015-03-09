@@ -31,7 +31,6 @@ describe('Create account controller', function() {
     });
 
     it('should send account creation to backend', inject(function($location) {
-
         httpBackend
             .whenPOST('/api/users', newAccount)
             .respond(201, createdUser);
@@ -44,6 +43,22 @@ describe('Create account controller', function() {
         expect($location.path()).toBe('/me');
         expect(authService.isLoggedIn()).toBe(true);
         expect(authService.currentUser()).toEqual(createdUser);
+    }));
+
+    it('should not create account with already used email', inject(function($location) {
+        expect(scope.errorMessage).toEqual('');
+        httpBackend
+            .whenPOST('/api/users', newAccount)
+            .respond(409, 'Error message');
+        scope.newAccount = newAccount;
+
+        scope.create();
+
+        httpBackend.flush();
+        httpBackend.expectPOST('/api/users');
+        expect(scope.errorMessage).toEqual('Error message');
+        expect(authService.isLoggedIn()).toBe(false);
+        expect(authService.currentUser()).toBeUndefined();
     }));
 
 });
