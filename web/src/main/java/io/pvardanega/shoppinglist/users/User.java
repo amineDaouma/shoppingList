@@ -51,14 +51,6 @@ public class User {
         return email.equals(user.email) && userId.equals(user.userId) && username.equals(user.username);
     }
 
-    @Override
-    public int hashCode() {
-        int result = userId.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + username.hashCode();
-        return result;
-    }
-
     public UserEntity toEntity() {
         return new UserEntity(userId, email, username, password);
     }

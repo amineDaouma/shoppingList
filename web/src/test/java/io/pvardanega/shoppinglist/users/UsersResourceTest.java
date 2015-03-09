@@ -12,18 +12,25 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import io.pvardanega.shoppinglist.exception.ConflictException;
 import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsersResourceTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @InjectMocks
     private UsersResource resource;
@@ -57,13 +64,12 @@ public class UsersResourceTest {
         given(usersRepository.findByEmail(user.email)).willReturn(of(expectedUserEntity));
         given(usersRepository.create(user)).willReturn(expectedUserEntity);
 
-        Response response = resource.createUser(user);
+        thrown.expect(ConflictException.class);
+        thrown.expectMessage("Email 'test@test.fr' already used!");
+
+        resource.createUser(user);
 
         verify(usersRepository, never()).addNewListTo(anyLong(), any(ShoppingList.class));
-        assertThat(response.getStatus()).isEqualTo(409);
-        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
-        String errorMessage = (String) response.getEntity();
-        assertThat(errorMessage).isEqualTo("Email 'test@test.fr' already used!");
     }
 
     @Test public void
@@ -91,13 +97,12 @@ public class UsersResourceTest {
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", asList(new ShoppingList("Apéro tonight")));
         given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
-        Response response = resource.addNewList(userId, "Apéro tonight");
+        thrown.expect(ConflictException.class);
+        thrown.expectMessage("A list with name 'Apéro tonight' already exists!");
+
+        resource.addNewList(userId, "Apéro tonight");
 
         verify(usersRepository, never()).addNewListTo(anyLong(), any(ShoppingList.class));
-        assertThat(response.getStatus()).isEqualTo(409);
-        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
-        String errorMessage = (String) response.getEntity();
-        assertThat(errorMessage).isEqualTo("A list with name 'Apéro tonight' already exists!");
     }
 
     @Test public void
@@ -105,12 +110,12 @@ public class UsersResourceTest {
         Long userId = 12345L;
         given(usersRepository.get(userId)).willReturn(empty());
 
-        Response response = resource.addNewList(userId, "Apéro tonight");
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("User with id '12345' not found!");
+
+        resource.addNewList(userId, "Apéro tonight");
 
         verify(usersRepository, never()).addNewListTo(anyLong(), any(ShoppingList.class));
-        assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
-        assertThat((String) response.getEntity()).isEqualTo("User with id '12345' not found!");
     }
 
     @Test public void
@@ -141,14 +146,14 @@ public class UsersResourceTest {
         UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", newArrayList(new ShoppingList(listName)));
         given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
 
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("Cannot add produt 'Salad' to list 'unknown': list not found for user with id '" + userId + "'.");
+
         // When
-        Response response = resource.addProductToList(userId, "unknown", "Salad");
+        resource.addProductToList(userId, "unknown", "Salad");
 
         // Then
         verify(usersRepository, never()).addProductToList(userId, listName, "Salad");
-        assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
-        assertThat(response.getEntity()).isEqualTo("Cannot add produt 'Salad' to list 'unknown': list not found for user with id '" + userId + "'.");
     }
 
     @Test public void
@@ -157,14 +162,14 @@ public class UsersResourceTest {
         Long userId = 54321L;
         given(usersRepository.get(userId)).willReturn(empty());
 
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("User with id '54321' not found!");
+
         // When
-        Response response = resource.addProductToList(userId, "unknown", "Salad");
+        resource.addProductToList(userId, "unknown", "Salad");
 
         // Then
         verify(usersRepository, never()).addProductToList(userId, "unknown", "Salad");
-        assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
-        assertThat(response.getEntity()).isEqualTo("User with id '" + userId + "' not found!");
     }
 
     @Test public void
@@ -186,18 +191,30 @@ public class UsersResourceTest {
     }
 
     @Test public void
+    should_not_find_unknown_list() {
+        // Given
+        Long userId = 54321L;
+        UserEntity expectedUserEntity = new UserEntity(userId, "test@test.fr", "test", "password", newArrayList(new ShoppingList("Romantic dinner")));
+        given(usersRepository.get(userId)).willReturn(of(expectedUserEntity));
+
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("List with name 'unknown list' not found for user with id '54321'!");
+
+        // When
+        resource.retrieveList(userId, "unknown list");
+    }
+
+    @Test public void
     should_not_retrieve_a_list_if_user_is_not_found() {
         // Given
         Long userId = 54321L;
         given(usersRepository.get(userId)).willReturn(empty());
 
-        // When
-        Response response = resource.retrieveList(userId, "any list");
+        thrown.expect(NotFoundException.class);
+        thrown.expectMessage("User with id '54321' not found!");
 
-        // Then
-        assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getMediaType()).isEqualTo(TEXT_PLAIN_TYPE);
-        assertThat((String) response.getEntity()).isEqualTo("User with id '54321' not found!");
+        // When
+        resource.retrieveList(userId, "any list");
     }
 
     @Test public void

@@ -18,8 +18,4 @@ public class ShoppingList {
     public ShoppingList(@JsonProperty(value = "name") String name) {
         this.name = name;
     }
-
-    public void addProduct(String product) {
-        this.products.add(product);
-    }
 }

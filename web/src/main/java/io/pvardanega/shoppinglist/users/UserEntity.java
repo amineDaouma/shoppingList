@@ -36,10 +36,6 @@ public class UserEntity {
         this.lists.addAll(lists);
     }
 
-    public UserEntity(String email, String username, String password) {
-        this(null, email, username, password);
-    }
-
     public UserEntity(Long id, String email, String username, String password) {
         this(id, email, username, password, newArrayList());
     }
@@ -58,14 +54,6 @@ public class UserEntity {
         if (!userId.equals(userEntity.userId)) return false;
         if (!email.equals(userEntity.email)) return false;
         return username.equals(userEntity.username);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = userId.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + username.hashCode();
-        return result;
     }
 
     public User toUser() {
