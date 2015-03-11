@@ -28,6 +28,7 @@
                         <configuration>
                             <dbConnectionSettings>
                                 <hostname>localhost</hostname>
+                                <port>27017</port>
                                 <database>shoppinglist</database>
                             </dbConnectionSettings>
                             <dbCreateScriptsDirectory>
