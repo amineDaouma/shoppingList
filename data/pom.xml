@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>io.pvardanega.shopping-list</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>data</artifactId>
+    <packaging>pom</packaging>
+
+    <name>data</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode</groupId>
+                <artifactId>maven-mongodb-plugin</artifactId>
+                <configuration>
+                    <dbConnectionSettings>
+                        <hostname>localhost</hostname>
+                        <database>shoppinglist</database>
+                    </dbConnectionSettings>
+                    <dbCreateScriptsDirectory>
+                        <param>src/main/mongodb/create</param>
+                    </dbCreateScriptsDirectory>
+                    <dbUpdateScriptsDirectory>
+                        <param>src/main/mongodb/update</param>
+                    </dbUpdateScriptsDirectory>
+                    <scriptEncoding>UTF-8</scriptEncoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>mongodb-setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>create</goal>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
