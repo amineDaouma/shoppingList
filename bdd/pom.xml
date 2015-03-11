@@ -78,6 +78,29 @@
 
         <plugins>
             <plugin>
+                <groupId>com.googlecode</groupId>
+                <artifactId>maven-mongodb-plugin</artifactId>
+                <configuration>
+                    <dbCreateScriptsDirectory>
+                        <param>../web/src/main/mongodb/create</param>
+                    </dbCreateScriptsDirectory>
+                    <dbUpdateScriptsDirectory>
+                        <param>../web/src/main/mongodb/update</param>
+                    </dbUpdateScriptsDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>mongodb-setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>create</goal>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <configuration>

@@ -59,4 +59,16 @@ public class UserEntity {
     public User toUser() {
         return new User(userId, email, username, null, lists);
     }
+
+    protected static class UserIdSeq {
+        private final String _id;
+        public final Long nextVal;
+
+        @JsonCreator
+        public UserIdSeq(@JsonProperty("_id") String _id,
+                         @JsonProperty("nextVal") Long nextVal) {
+            this._id = _id;
+            this.nextVal = nextVal;
+        }
+    }
 }

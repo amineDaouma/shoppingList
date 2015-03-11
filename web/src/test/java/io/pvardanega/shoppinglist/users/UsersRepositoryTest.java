@@ -1,13 +1,12 @@
 package io.pvardanega.shoppinglist.users;
 
+import static io.pvardanega.shoppinglist.users.UsersRepository.COUNTERS_COLLECTION_NAME;
 import static io.pvardanega.shoppinglist.users.UsersRepository.USERS_COLLECTION_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.jongo.Jongo;
-import org.jongo.MongoCollection;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import com.github.fakemongo.Fongo;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DuplicateKeyException;
 import io.pvardanega.shoppinglist.config.MongoClient;
 import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
@@ -23,28 +24,22 @@ public class UsersRepositoryTest {
 
     @InjectMocks private UsersRepository repository;
     @Mock private MongoClient mongoClient;
-
-    private final Fongo fongo = new Fongo("Test");
-    private MongoCollection usersCollection;
+    private Jongo jongo;
 
     @Before
     public void initFongo() {
-        usersCollection = new Jongo(fongo.getDB("shoppinglist")).getCollection(USERS_COLLECTION_NAME);
-        given(mongoClient.getCollection(USERS_COLLECTION_NAME)).willReturn(usersCollection);
-    }
-
-    @After
-    public void clearSlotsCollection() {
-        usersCollection.drop();
+        jongo = new Jongo(new Fongo("Test").getDB("shoppinglist"));
+        given(mongoClient.getCollection(USERS_COLLECTION_NAME)).willReturn(jongo.getCollection(USERS_COLLECTION_NAME));
+        given(mongoClient.getCollection(COUNTERS_COLLECTION_NAME)).willReturn(jongo.getCollection(COUNTERS_COLLECTION_NAME));
     }
 
     @Test public void
-    should_insert_user_in_DB_and_generate_ids() {
+    should_compute_ids_and_insert_user_in_DB() {
         User user = new User("test@test.fr", "username", "password");
 
         UserEntity createdUserEntity = repository.create(user);
 
-        assertThat(createdUserEntity.userId).isGreaterThan(0L);
+        assertThat(createdUserEntity.userId).isEqualTo(1L);
         assertThat(createdUserEntity._id).isNotNull();
         assertThat(createdUserEntity.email).isEqualTo(user.email);
         assertThat(createdUserEntity.username).isEqualTo(user.username);
@@ -52,8 +47,33 @@ public class UsersRepositoryTest {
     }
 
     @Test public void
+    should_increment_userid_sequentially() {
+        User user1 = new User("test1@test.fr", "username", "password");
+        User user2 = new User("test2@test.fr", "username", "password");
+        User user3 = new User("test3@test.fr", "username", "password");
+
+        UserEntity createdUserEntity1 = repository.create(user1);
+        UserEntity createdUserEntity2 = repository.create(user2);
+        UserEntity createdUserEntity3 = repository.create(user3);
+
+        assertThat(createdUserEntity1.userId).isEqualTo(1L);
+        assertThat(createdUserEntity2.userId).isEqualTo(2L);
+        assertThat(createdUserEntity3.userId).isEqualTo(3L);
+    }
+
+    @Test(expected = DuplicateKeyException.class) public void
+    should_throw_exception_when_creating_a_user_with_already_existing_email() {
+        jongo.getCollection(USERS_COLLECTION_NAME).getDBCollection().createIndex(new BasicDBObject("email", 1), new BasicDBObject("unique", true));
+        User user1 = new User("test@test.fr", "username", "password");
+        User user2 = new User("test@test.fr", "username", "password");
+
+        repository.create(user1);
+        repository.create(user2);
+    }
+
+    @Test public void
     should_retrieve_a_user_by_its_id() {
-        UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
+        UserEntity createdUserEntity = repository.create(new User("test@test.fr", "test", "password"));
 
         Optional<UserEntity> userEntity = repository.get(createdUserEntity.userId);
 
@@ -85,25 +105,6 @@ public class UsersRepositoryTest {
         repository.create(new User("test@test.fr", "test", "password"));
 
         Optional<UserEntity> userEntity = repository.get(new ObjectId());
-
-        assertThat(userEntity.isPresent()).isFalse();
-    }
-
-    @Test public void
-    should_retrieve_a_user_by_its_email() {
-        UserEntity createdUserEntity = repository.create(new User(1234L, "test@test.fr", "test", "password"));
-
-        Optional<UserEntity> userEntity = repository.findByEmail(createdUserEntity.email);
-
-        assertThat(userEntity.isPresent()).isTrue();
-        assertThat(userEntity.get()).isEqualTo(createdUserEntity);
-    }
-
-    @Test public void
-    should_not_retrieve_a_user_when_searching_with_an_unknwon_email() {
-        repository.create(new User(1234L, "test@test.fr", "test", "password"));
-
-        Optional<UserEntity> userEntity = repository.findByEmail("unknown@test.fr");
 
         assertThat(userEntity.isPresent()).isFalse();
     }

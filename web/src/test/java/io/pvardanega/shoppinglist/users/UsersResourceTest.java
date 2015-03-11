@@ -12,6 +12,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import java.net.UnknownHostException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import org.junit.Rule;
@@ -23,6 +24,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import com.mongodb.DuplicateKeyException;
 import io.pvardanega.shoppinglist.exception.ConflictException;
 import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
@@ -48,7 +50,6 @@ public class UsersResourceTest {
     should_persist_user_and_return_201() {
         User user = new User("test@test.fr", "test", "password");
         UserEntity expectedUserEntity = new UserEntity(12345L, "test@test.fr", "test", "password");
-        given(usersRepository.findByEmail(user.email)).willReturn(empty());
         given(usersRepository.create(user)).willReturn(expectedUserEntity);
 
         Response response = resource.createUser(user);
@@ -58,11 +59,9 @@ public class UsersResourceTest {
     }
 
     @Test public void
-    should_not_create_a_user_when_email_is_already_used() {
+    should_not_create_a_user_when_email_is_already_used() throws UnknownHostException {
         User user = new User("test@test.fr", "test", "password");
-        UserEntity expectedUserEntity = new UserEntity(12345L, "test@test.fr", "test", "password");
-        given(usersRepository.findByEmail(user.email)).willReturn(of(expectedUserEntity));
-        given(usersRepository.create(user)).willReturn(expectedUserEntity);
+        given(usersRepository.create(user)).willThrow(DuplicateKeyException.class);
 
         thrown.expect(ConflictException.class);
         thrown.expectMessage("Email 'test@test.fr' already used!");

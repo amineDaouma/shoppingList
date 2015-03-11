@@ -17,6 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import com.mongodb.DuplicateKeyException;
 import io.pvardanega.shoppinglist.exception.ConflictException;
 import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
@@ -34,8 +35,11 @@ public class UsersResource {
 
     @POST
     public Response createUser(User user) {
-        checkForConflict(usersRepository.findByEmail(user.email), "Email '" + user.email + "' already used!");
-        return ok(usersRepository.create(user).toUser()).status(CREATED).build();
+        try {
+            return ok(usersRepository.create(user).toUser()).status(CREATED).build();
+        } catch (DuplicateKeyException e) {
+            throw new ConflictException("Email '" + user.email + "' already used!");
+        }
     }
 
     @Path("{userId}")
@@ -49,7 +53,9 @@ public class UsersResource {
     @POST
     public Response addNewList(@PathParam("userId") Long userId, String listName) {
         Optional<UserEntity> user = retrieveUserFromId(userId);
-        checkForConflict(findListFromName(listName, user.get().lists), "A list with name '" + listName + "' already exists!");
+        if (findListFromName(listName, user.get().lists).isPresent()) {
+            throw new ConflictException("A list with name '" + listName + "' already exists!");
+        }
 
         ShoppingList shoppingList = new ShoppingList(listName);
         usersRepository.addNewListTo(userId, shoppingList);
@@ -97,11 +103,5 @@ public class UsersResource {
             throw new NotFoundException("User with id '" + userId + "' not found!");
         }
         return user;
-    }
-
-    private void checkForConflict(Optional optional, String message) {
-        if (optional.isPresent()) {
-            throw new ConflictException(message);
-        }
     }
 }

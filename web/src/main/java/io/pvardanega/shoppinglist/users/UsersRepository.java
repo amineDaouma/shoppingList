@@ -2,19 +2,20 @@ package io.pvardanega.shoppinglist.users;
 
 import static java.util.Optional.ofNullable;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 import com.google.inject.Singleton;
+import com.mongodb.DuplicateKeyException;
 import io.pvardanega.shoppinglist.config.MongoClient;
+import io.pvardanega.shoppinglist.users.UserEntity.UserIdSeq;
 import io.pvardanega.shoppinglist.users.shoppinglist.ShoppingList;
 
 @Singleton
 public class UsersRepository {
 
     public static final String USERS_COLLECTION_NAME = "users";
-    private AtomicInteger counter = new AtomicInteger(0);
+    protected static final String COUNTERS_COLLECTION_NAME = "counters";
     private MongoClient mongoClient;
 
     @Inject
@@ -34,18 +35,13 @@ public class UsersRepository {
                 .with("{$push: {lists.$.products: #}}", product);
     }
 
-    public UserEntity create(User user) {
+    public UserEntity create(User user) throws DuplicateKeyException {
         UserEntity userToCreate = user.toEntity();
         getUsersCollection().insert(userToCreate);
-        Long userId = (long) counter.incrementAndGet();
         getUsersCollection()
                 .update(userToCreate._id)
-                .with("{$set: {userId: #}}", userId);
+                .with("{$set: {userId: #}}", getNextUserId());
         return get(userToCreate._id).get();
-    }
-
-    public Optional<UserEntity> findByEmail(String email) {
-        return ofNullable(getUsersCollection().findOne("{email: #}", email).as(UserEntity.class));
     }
 
     public Optional<UserEntity> get(Long userId) {
@@ -62,5 +58,20 @@ public class UsersRepository {
 
     private MongoCollection getUsersCollection() {
         return mongoClient.getCollection(USERS_COLLECTION_NAME);
+    }
+
+    private MongoCollection getCountersCollection() {
+        return mongoClient.getCollection(COUNTERS_COLLECTION_NAME);
+    }
+
+    private Long getNextUserId() {
+        return getCountersCollection().
+                findAndModify("{_id: #}", "userId").
+                with("{$inc: {nextVal: 1}}").
+                returnNew().
+                upsert().
+                as(UserIdSeq.class).
+                nextVal
+        ;
     }
 }

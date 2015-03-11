@@ -113,35 +113,16 @@
 
         <plugins>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <stopPort>8005</stopPort>
-                    <stopKey>STOP</stopKey>
-                    <stopWait>10</stopWait>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>MONGO_URL</name>
-                            <value>mongodb://localhost/shoppinglist</value>
-                        </systemProperty>
-                    </systemProperties>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/IT.java</exclude>
+                    </excludes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -176,16 +157,58 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <groupId>com.googlecode</groupId>
+                <artifactId>maven-mongodb-plugin</artifactId>
                 <configuration>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/IT.java</exclude>
-                    </excludes>
+                    <dbCreateScriptsDirectory>
+                        <param>src/main/mongodb/create</param>
+                    </dbCreateScriptsDirectory>
+                    <dbUpdateScriptsDirectory>
+                        <param>src/main/mongodb/update</param>
+                    </dbUpdateScriptsDirectory>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>mongodb-setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>create</goal>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                    <stopPort>8005</stopPort>
+                    <stopKey>STOP</stopKey>
+                    <stopWait>10</stopWait>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>MONGO_URL</name>
+                            <value>mongodb://localhost/shoppinglist</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
